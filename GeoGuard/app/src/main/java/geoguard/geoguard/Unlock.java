@@ -1,17 +1,30 @@
 package geoguard.geoguard;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
 
 
-public class Unlock extends ActionBarActivity {
+public class Unlock extends Activity implements View.OnClickListener {
+
+    Button btnSettings;
+    Button btnEnter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_unlock);
+
+        btnSettings = (Button) findViewById(R.id.btnSettings);
+        btnEnter = (Button) findViewById(R.id.btnEnter);
+
+        btnEnter.setOnClickListener(this);
     }
 
     @Override
@@ -34,5 +47,23 @@ public class Unlock extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onClick(View v){
+        switch (v.getId()){
+            case R.id.btnEnter:
+                startMain(v);
+                break;
+            case R.id.btnSettings:
+                break;
+            default:
+                break;
+        }
+    }
+
+    public void startMain(View view){
+        Intent intent = new Intent(this, MainScreen.class);
+        startActivity(intent);
     }
 }
