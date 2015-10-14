@@ -20,6 +20,22 @@
             android:name=".MainScreen"
             android:label="@string/title_activity_main_screen" >
         </activity>
+        <activity
+            android:name=".Settings"
+            android:label="@string/title_activity_settings" >
+        </activity>
+        <activity
+            android:name=".HomeBase"
+            android:label="@string/title_activity_home_base" >
+        </activity>
+        <activity
+            android:name=".MobilePasswords"
+            android:label="@string/title_activity_mobile_passwords" >
+        </activity>
+        <activity
+            android:name=".Insert"
+            android:label="@string/title_activity_insert" >
+        </activity>
     </application>
 
 </manifest>

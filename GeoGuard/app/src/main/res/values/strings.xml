@@ -4,4 +4,8 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_main_screen">MainScreen</string>
+    <string name="title_activity_settings">Settings</string>
+    <string name="title_activity_home_base">HomeBase</string>
+    <string name="title_activity_mobile_passwords">MobilePasswords</string>
+    <string name="title_activity_insert">Insert</string>
 </resources>
