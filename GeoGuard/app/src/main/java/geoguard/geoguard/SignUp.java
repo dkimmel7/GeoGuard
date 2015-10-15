@@ -9,58 +9,25 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 
-public class Unlock extends Activity {
+public class SignUp extends Activity implements View.OnClickListener{
 
     Button btnEnter;
     EditText password;
-    TextView btnSignup;
+    EditText confirm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_unlock);
-
+        setContentView(R.layout.activity_sign_up);
         btnEnter = (Button) findViewById(R.id.btnEnter);
         password = (EditText) findViewById(R.id.password);
-        btnSignup = (TextView) findViewById(R.id.signup);
+        confirm = (EditText) findViewById(R.id.confirm);
 
-        btnEnter.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                checkPassword(v);
-            }
-        });
-
-        btnSignup.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), SignUp.class);
-                startActivity(intent);
-            }
-        });
-
+        btnEnter.setOnClickListener(this);
     }
-
- /*   @Override
-    public void onClick(View v){
-        switch(v.getId()){
-            case R.id.btnEnter:
-                Intent intent = new Intent(getApplicationContext(), SignUp.class);
-                startActivity(intent);
-                break;
-            case R.id.signup:
-                Intent intent2 = new Intent(getApplicationContext(), SignUp.class);
-                startActivity(intent2);
-                break;
-            default:
-                break;
-        }
-    }
-*/
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -85,25 +52,40 @@ public class Unlock extends Activity {
     }
 
     @Override
+    public void onClick(View v){
+        switch (v.getId()){
+            case R.id.btnEnter:
+                storePassword(v);
+                break;
+            case R.id.btnSettings:
+                break;
+            default:
+                break;
+        }
+    }
+
+    @Override
     public void onBackPressed(){
         //disable going back (doesnt work)
         //todo look into this
         moveTaskToBack(true);
     }
 
-    /*
-    if the password equals what is stored launch main activity
-    otherwise popup that its invalid
-     */
-    public void checkPassword(View v){
+    public void storePassword(View v){
+        //do they match?
         String pass1= password.getText().toString();
+        String pass2= confirm.getText().toString();
         if(pass1.equals("")){
-            //popup invalid
-            Toast.makeText(getBaseContext(), "Incorrect Password", Toast.LENGTH_LONG).show();
+            Toast.makeText(getBaseContext(), "Invalid Password", Toast.LENGTH_LONG).show();
+        }else if(!pass1.equals(pass2)){
+            Toast.makeText(getBaseContext(), "Passwords Must Match", Toast.LENGTH_LONG).show();
         }else{
-            Intent intent = new Intent(this, MainScreen.class);
-            startActivity(intent);
+            startMain(v);
         }
     }
 
+    public void startMain(View view){
+        Intent intent = new Intent(this, MainScreen.class);
+        startActivity(intent);
+    }
 }

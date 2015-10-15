@@ -8,4 +8,5 @@
     <string name="title_activity_home_base">HomeBase</string>
     <string name="title_activity_mobile_passwords">MobilePasswords</string>
     <string name="title_activity_insert">Insert</string>
+    <string name="title_activity_sign_up">SignUp</string>
 </resources>
