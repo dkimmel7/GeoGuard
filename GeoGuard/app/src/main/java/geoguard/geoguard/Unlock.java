@@ -2,6 +2,7 @@ package geoguard.geoguard;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -95,11 +96,17 @@ public class Unlock extends Activity {
     if the password equals what is stored launch main activity
     otherwise popup that its invalid
      */
+    //todo make things private
     public void checkPassword(View v){
         String pass1= password.getText().toString();
-        if(pass1.equals("")){
-            //popup invalid
-            Toast.makeText(getBaseContext(), "Incorrect Password", Toast.LENGTH_LONG).show();
+
+        SharedPreferences userId =getSharedPreferences("userId", MODE_PRIVATE);
+        String pass2 = userId.getString("password", null);
+
+        if(pass2==null || pass2.equals("")) {
+            Toast.makeText(getBaseContext(), "no password found" , Toast.LENGTH_LONG).show();
+        }else if(!pass1.equals(pass2)){
+            Toast.makeText(getBaseContext(), "invalid password" , Toast.LENGTH_LONG).show();
         }else{
             Intent intent = new Intent(this, MainScreen.class);
             startActivity(intent);

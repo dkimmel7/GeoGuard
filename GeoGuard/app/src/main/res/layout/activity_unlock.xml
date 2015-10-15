@@ -24,16 +24,14 @@
             android:layout_centerInParent="true"
             android:textSize="30pt"
             android:textColor="#00AA00"
-            android:text="GeoGuard"
+            android:text="GeoLuard"
             />
     </RelativeLayout>
     <LinearLayout
         android:orientation="vertical"
-
         android:layout_weight="1"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/Input"
         android:layout_marginLeft="10pt"
         android:layout_marginRight="10pt"
         android:layout_marginTop="10pt">
@@ -44,8 +42,6 @@
             android:inputType="textPassword"
             android:hint="Password"
             android:layout_height="wrap_content" />
-
-
     </LinearLayout>
     <LinearLayout
         android:orientation="vertical"

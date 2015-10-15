@@ -18,6 +18,7 @@ public class MainScreen extends Activity implements View.OnClickListener {
     Button btnMobilePass;
     Button btnInsert;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,6 +61,12 @@ public class MainScreen extends Activity implements View.OnClickListener {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onBackPressed(){
+        //disable going back
+        moveTaskToBack(true);
+    }
+
     public void onClick(View v){
         switch (v.getId()){
             case R.id.btnHomeBase:
@@ -72,7 +79,7 @@ public class MainScreen extends Activity implements View.OnClickListener {
                 break;
             case R.id.btnLocalPass:
                 //Intent local = new Intent(this, LocalPasswords.class);
-                // startActivity(local);
+                //startActivity(local);
                 break;
             case R.id.btnMobilePass:
                 Intent mobile = new Intent(this, MobilePasswords.class);

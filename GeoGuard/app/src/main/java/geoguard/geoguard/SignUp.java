@@ -2,6 +2,7 @@ package geoguard.geoguard;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -55,33 +56,44 @@ public class SignUp extends Activity implements View.OnClickListener{
     public void onClick(View v){
         switch (v.getId()){
             case R.id.btnEnter:
-                storePassword(v);
-                break;
-            case R.id.btnSettings:
+                checkPassword(v);
                 break;
             default:
                 break;
         }
     }
 
-    @Override
-    public void onBackPressed(){
-        //disable going back (doesnt work)
-        //todo look into this
-        moveTaskToBack(true);
+    /*
+    This takes the two password fields and compares them and checks they meet basic requirements
+    todo check that strings are valid (alpha numeric)
+     */
+    public void checkPassword(View v){
+        //do they match?
+        SharedPreferences userId = getApplicationContext().getSharedPreferences("userId", MODE_PRIVATE);
+        String existingPass = userId.getString("password", null);
+
+        if(existingPass==(null) || existingPass.equals("")) {
+            String pass1 = password.getText().toString();
+            String pass2 = confirm.getText().toString();
+            if (pass1.equals("")) {
+                Toast.makeText(getBaseContext(), "Invalid Password", Toast.LENGTH_LONG).show();
+            } else if (!pass1.equals(pass2)) {
+                Toast.makeText(getBaseContext(), "Passwords Must Match", Toast.LENGTH_LONG).show();
+            } else {
+                //storePassword(pass1);
+                startMain(v);
+            }
+        }else{
+            Toast.makeText(getBaseContext(), "profile already created", Toast.LENGTH_LONG).show();
+        }
     }
 
-    public void storePassword(View v){
-        //do they match?
-        String pass1= password.getText().toString();
-        String pass2= confirm.getText().toString();
-        if(pass1.equals("")){
-            Toast.makeText(getBaseContext(), "Invalid Password", Toast.LENGTH_LONG).show();
-        }else if(!pass1.equals(pass2)){
-            Toast.makeText(getBaseContext(), "Passwords Must Match", Toast.LENGTH_LONG).show();
-        }else{
-            startMain(v);
-        }
+    //todo Make encrypted password
+    private void storePassword(String pass){
+        SharedPreferences.Editor edit = getSharedPreferences("userId",MODE_PRIVATE).edit();
+        edit.putString("password", pass);
+        edit.commit();
+        Toast.makeText(getApplicationContext(),"Password Saved", Toast.LENGTH_LONG).show();
     }
 
     public void startMain(View view){
