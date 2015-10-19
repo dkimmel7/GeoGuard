@@ -17,7 +17,7 @@ public class MainScreen extends Activity implements View.OnClickListener {
     Button btnLocalPass;
     Button btnMobilePass;
     Button btnInsert;
-
+    Button btnLocation; // @GeoLocation
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,13 +29,14 @@ public class MainScreen extends Activity implements View.OnClickListener {
         btnLocalPass = (Button) findViewById(R.id.btnLocalPass);
         btnMobilePass = (Button) findViewById(R.id.btnMobilePass);
         btnInsert = (Button) findViewById(R.id.btnInsert);
-
+        btnLocation = (Button) findViewById(R.id.btnLocation); // @GeoLocation
 
         btnHomeBase.setOnClickListener(this);
         btnLocalPass.setOnClickListener(this);
         btnMobilePass.setOnClickListener(this);
         btnSettings.setOnClickListener(this);
         btnInsert.setOnClickListener(this);
+        btnLocation.setOnClickListener(this); // @GeoLocation
 
     }
 
@@ -88,6 +89,10 @@ public class MainScreen extends Activity implements View.OnClickListener {
             case R.id.btnInsert:
                 Intent insert = new Intent(this, Insert.class);
                 startActivity(insert);
+                break;
+            case R.id.btnLocation: // @GeoLocation
+                Intent location = new Intent(this, Location.class);
+                startActivity(location);
                 break;
             default:
                 break;
