@@ -80,7 +80,7 @@ public class SignUp extends Activity implements View.OnClickListener{
             } else if (!pass1.equals(pass2)) {
                 Toast.makeText(getBaseContext(), "Passwords Must Match", Toast.LENGTH_LONG).show();
             } else {
-                //storePassword(pass1);
+                storePassword(pass1);
                 startMain(v);
             }
         }else{
@@ -90,7 +90,7 @@ public class SignUp extends Activity implements View.OnClickListener{
 
     //todo Make encrypted password
     private void storePassword(String pass){
-        SharedPreferences.Editor edit = getSharedPreferences("userId",MODE_PRIVATE).edit();
+        SharedPreferences.Editor edit = getApplicationContext().getSharedPreferences("userId",MODE_PRIVATE).edit();
         edit.putString("password", pass);
         edit.commit();
         Toast.makeText(getApplicationContext(),"Password Saved", Toast.LENGTH_LONG).show();

@@ -100,10 +100,10 @@ public class Unlock extends Activity {
     public void checkPassword(View v){
         String pass1= password.getText().toString();
 
-        SharedPreferences userId =getSharedPreferences("userId", MODE_PRIVATE);
-        String pass2 = userId.getString("password", null);
+        SharedPreferences userId = getApplicationContext().getSharedPreferences("userId", MODE_PRIVATE);
+        String pass2 = userId.getString("password", "");
 
-        if(pass2==null || pass2.equals("")) {
+        if( pass2.equals("")) {
             Toast.makeText(getBaseContext(), "no password found" , Toast.LENGTH_LONG).show();
         }else if(!pass1.equals(pass2)){
             Toast.makeText(getBaseContext(), "invalid password" , Toast.LENGTH_LONG).show();
