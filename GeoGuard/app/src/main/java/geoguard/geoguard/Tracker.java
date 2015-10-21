@@ -1,18 +1,3 @@
-/*
-package geoguard.geoguard;
-
-import android.app.Service;
-import android.location.LocationListener;
-*/
-/**
- * Created by dnalex on 10/19/2015.
- *//*
-public class Tracker extends Service implements LocationListener {
-
-
-
-} */
-
 package geoguard.geoguard;
 
 import android.app.AlertDialog;
@@ -194,3 +179,5 @@ public class Tracker extends Service implements LocationListener{
     }
 
 }
+
+
