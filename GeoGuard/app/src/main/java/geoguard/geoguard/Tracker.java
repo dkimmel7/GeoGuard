@@ -15,21 +15,27 @@ import android.util.Log;
 
 public class Tracker extends Service implements LocationListener{
 
+    // Class allows access to application-specific resources, app-level operations, etc.
     private final Context context;
 
+    // Allow access to system location services
+    protected LocationManager locationManager;
+    // Variables for checking if GPS and/or Network Provider is on
     boolean isGPSEnabled = false;
     boolean isNetworkEnabled = false;
     boolean canGetLocation = false;
 
+    // Data class of geographic location
     Location location;
-
+    // Variable for geolocation coordinates
     double latitude;
     double longitude;
 
-    private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 10;
-    private static final long MIN_TIME_BW_UPDATES = 1000 * 60 * 1;
-
-    protected LocationManager locationManager;
+    /* Controls frequency of location updates
+     * Application will only receive updates when location changed via distance and time passed
+     */
+    private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 10; // 10 meters
+    private static final long MIN_TIME_BW_UPDATES = 1 * 60 * 1000; // 1 minute (in ms)
 
     public Tracker(Context context) {
         this.context = context;
@@ -40,26 +46,31 @@ public class Tracker extends Service implements LocationListener{
         try {
             locationManager = (LocationManager) context.getSystemService(LOCATION_SERVICE);
 
+            // Checks GPS and Network Provider. Provide boolean value to variable
+            // isProviderEnabled returns status of provider
             isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-
             isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
             if(!isGPSEnabled && !isNetworkEnabled) {
-
+                // Do something
             } else {
+                // If network provider OR/AND GPS is enabled, application can get location
                 this.canGetLocation = true;
 
+                // Network Provider is enabled on device for application
                 if (isNetworkEnabled) {
-
+                    // Request for location be be updated periodically via provider
                     locationManager.requestLocationUpdates(
                             LocationManager.NETWORK_PROVIDER,
                             MIN_TIME_BW_UPDATES,
                             MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
-
+                    // Get last known updated location from provider, if needed immediately
+                    // If provider disabled for long - possibly out-of-date
                     if (locationManager != null) {
                         location = locationManager
                                 .getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 
+                        // Location was found, get the geolocation
                         if (location != null) {
 
                             latitude = location.getLatitude();
@@ -69,6 +80,8 @@ public class Tracker extends Service implements LocationListener{
 
                 }
 
+                // GPS is enabled on device for application
+                // Methods similar to location via Network Provider
                 if(isGPSEnabled) {
                     if(location == null) {
                         locationManager.requestLocationUpdates(
