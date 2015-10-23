@@ -72,7 +72,6 @@ public class Tracker extends Service implements LocationListener{
 
                         // Location was found, get the geolocation
                         if (location != null) {
-
                             latitude = location.getLatitude();
                             longitude = location.getLongitude();
                         }
@@ -134,15 +133,13 @@ public class Tracker extends Service implements LocationListener{
         return this.canGetLocation;
     }
 
+    // If GPS is not enabled, this will prompt user to enable
     public void showSettingsAlert() {
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(context);
-
         alertDialog.setTitle("GPS is settings");
-
         alertDialog.setMessage("GPS is not enabled. Do you want to go to settings menu?");
-
         alertDialog.setPositiveButton("Settings", new DialogInterface.OnClickListener() {
-
+            // User wants to go to settings
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
@@ -151,40 +148,32 @@ public class Tracker extends Service implements LocationListener{
         });
 
         alertDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-
+            // User clicks cancel
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.cancel();
             }
         });
-
         alertDialog.show();
     }
 
+    // Generated methods, modify if needed
     @Override
     public void onLocationChanged(Location arg0) {
         // TODO Auto-generated method stub
-
     }
-
     @Override
     public void onProviderDisabled(String arg0) {
         // TODO Auto-generated method stub
-
     }
-
     @Override
     public void onProviderEnabled(String arg0) {
         // TODO Auto-generated method stub
-
     }
-
     @Override
     public void onStatusChanged(String arg0, int arg1, Bundle arg2) {
         // TODO Auto-generated method stub
-
     }
-
     @Override
     public IBinder onBind(Intent intent) {
         // TODO Auto-generated method stub
