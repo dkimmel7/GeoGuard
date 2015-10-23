@@ -15,14 +15,19 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
-
+import java.util.TreeMap;
+//import geoguard.geoguard.LinkedList;
+// Class which handles Insert screen, Uses a hash map which uses TreeMaps its values and either
+//the location as its key or noLocString for passwords which are not geotagged
+//noLocString could be changed so that the non-geotagged passwords can be grouped together
 
 
 public class Insert extends ActionBarActivity implements View.OnClickListener {
     Button bEnter;
     EditText editKey, editValue;
-
+    final String noLocString = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,9 +51,12 @@ public class Insert extends ActionBarActivity implements View.OnClickListener {
                 } else {
                     System.out.println("Key = ");
                     System.out.println(String.valueOf(editKey.getText()));
-                    storePasswordNoLoc(editKey.getText().toString(), editValue.getText().toString());
                     System.out.println("Value = ");
                     System.out.println(String.valueOf(editValue.getText()));
+                    storePassword("", editKey.getText().toString(), editValue.getText().toString());
+                    //editKey and editValue are cleared after button click
+                    editKey.setText("");
+                    editValue.setText("");
                 }
                 break;
         }
@@ -61,8 +69,7 @@ public class Insert extends ActionBarActivity implements View.OnClickListener {
     private ObjectOutputStream objectOutputStreamNoLoc;
     private String filename = "loc";
     private String filenameNoLoc = "noLoc";
-    private HashMap<String, String> noLocData = new HashMap<>();
-    private HashMap<String, String> locData = new HashMap<String, String>();
+    private HashMap<String, TreeMap<String,String>> noLocData = new HashMap<>();
     public void initOutputStreams() {
 
         try {
@@ -92,21 +99,41 @@ public class Insert extends ActionBarActivity implements View.OnClickListener {
 
     }
     //This is the function to add a password which is not geo tagged
-    public void storePasswordNoLoc(String key, String value) {
-        noLocData.put(key, value);
+    public void storePassword(String location,String key, String value) {
         if(noLocData == null) {
             System.out.println("NOLOCDATA IS NULL"); return;
         } else if(noLocData.isEmpty()) {
-            System.out.println("NOLOCDATA IS EMPTY"); return;
+            System.out.println("NOLOCDATA IS EMPTY");
+        }
+        if(location.equals(noLocString)) {
+            System.out.println("location == \"\"");
+            if(noLocData.containsKey(noLocString)) {
+                System.out.println("noLocData containsKey noLocString");
+                noLocData.get(noLocString).put(key, value);
+            } else {
+                System.out.println("noLocData DOES NOT containkey location");
+                TreeMap<String, String> temp = new TreeMap<>();
+                temp.put(key, value);
+                noLocData.put(noLocString, temp);
+            }
+        } else {
+            System.out.println("location is not \"\"");
+            TreeMap<String, String> pair = new TreeMap<>();
+            pair.put(key, value);
+            noLocData.put(location, pair);
         }
 
         try {
             File tempFile = getFilesDir();
-            System.out.println(tempFile);
-            FileOutputStream noLocStream = new FileOutputStream(tempFile+filenameNoLoc,false);
+            System.out.println(tempFile+" this is tempFile");
+            //Creates a new fileOutputStream and sets append to false which means
+            // it overwrites the file
+            FileOutputStream noLocStream = openFileOutput(filename, MODE_PRIVATE);
+            //FileOutputStream noLocStream = new FileOutputStream(tempFile+filenameNoLoc,false);
             ObjectOutputStream objNoLoc = new ObjectOutputStream(noLocStream);
             objNoLoc.writeObject(noLocData);
             objNoLoc.close();
+            noLocStream.close();
         } catch (Exception e) {
             e.printStackTrace();
             //System.err.println(e.toString());
@@ -115,13 +142,17 @@ public class Insert extends ActionBarActivity implements View.OnClickListener {
     public void printKeysNoLoc() {
         try {
             File tempFile = getFilesDir();
-            FileInputStream noLoc = new FileInputStream(tempFile+filenameNoLoc);
+            //FileInputStream noLoc = new FileInputStream(tempFile+filenameNoLoc);
+            FileInputStream noLoc = openFileInput(filename);
             ObjectInputStream oNoLoc = new ObjectInputStream(noLoc);
             try {
-                HashMap<String, String> tempMap = (HashMap<String, String>) oNoLoc.readObject();
+                HashMap<String, TreeMap<String, String>> tempMap = (HashMap<String, TreeMap<String, String>>) oNoLoc.readObject();
                 noLoc.close();
                 oNoLoc.close();
-                System.out.println(tempMap.toString());
+                //System.out.println(tempMap.toString());
+                //if(!(tempMap.get("") == null)) {
+                    System.out.println(tempMap.toString());
+                //} else System.out.println("tempMap is empty");
             }catch(Exception e) {
                 e.printStackTrace();
             }
@@ -131,62 +162,39 @@ public class Insert extends ActionBarActivity implements View.OnClickListener {
         }
         //System.out.println(noLocData.keySet());
     }
-    //Add geotagged password to other hashmap
-    public void storePasswordLoc(String key, String value, boolean overWrite) {
-        locData.put(key, value);
-        try {
-            objectOutputStreamLoc.writeObject(locData);
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.err.println(e.toString());
-        }
-    }
     //Retrieve the password associated with the given key
     // and returns geotagged password if locTagged is true
     public String retrievePassword(String key, boolean locTagged) {
-        if(locTagged) {
+
             try {
                 File tempFile = getFilesDir();
-                FileInputStream loc = new FileInputStream(tempFile+filename);
+                FileInputStream loc = openFileInput(filename);
                 ObjectInputStream oLoc = new ObjectInputStream(loc);
-                HashMap<String, String> tempMap = (HashMap<String,String>) oLoc.readObject();
+                HashMap<String, TreeMap<String, String>> tempMap = (HashMap<String,TreeMap<String, String>>) oLoc.readObject();
                 loc.close();
                 oLoc.close();
-                return tempMap.get(key);
+                //return here TODO;
             } catch (Exception e) {
                 System.err.println(e.toString());
                 e.printStackTrace();
             }
-        }
-        else {
-            try {
 
-                File tempFile = getFilesDir();
-                FileInputStream noLoc = new FileInputStream(tempFile+filenameNoLoc);
-                ObjectInputStream oNoLoc = new ObjectInputStream(noLoc);
-                HashMap<String, String> tempMap = (HashMap<String, String>) oNoLoc.readObject();
-                noLoc.close();
-                oNoLoc.close();
-                return tempMap.get(key);
-            } catch (Exception e) {
-                System.err.println(e.toString());
-                e.printStackTrace();
-            }
-        }
+
         return null;
     }
     //Removes an entry from the specified hashmap
-    public void removePassword (String key, boolean locTagged) {
-        if(locTagged) {
+
+    public void removePassword (String location, String key) {
             try {
                 File tempFile = getFilesDir();
-                FileInputStream loc = new FileInputStream(tempFile+filenameNoLoc);
+                FileInputStream loc =  openFileInput(filename);
                 ObjectInputStream oLoc = new ObjectInputStream(loc);
-                HashMap<String, String> tempMap = (HashMap<String, String>) oLoc.readObject();
+                HashMap<String, TreeMap<String, String>> tempMap = (HashMap<String, TreeMap<String, String>>) oLoc.readObject();
                 loc.close();
                 oLoc.close();
-                locData.remove(key);
-                tempMap.remove(key);
+                if(location.equals(noLocString)) {
+                    tempMap.get(noLocString).remove(key);
+                } else tempMap.remove(location);
                 objectOutputStreamLoc.writeObject(tempMap);
 
             } catch (Exception e) {
@@ -194,23 +202,8 @@ public class Insert extends ActionBarActivity implements View.OnClickListener {
                 e.printStackTrace();
             }
         }
-        else {
-            try {
-                File tempFile = getFilesDir();
-                FileInputStream noLoc = new FileInputStream(tempFile+filenameNoLoc);
-                ObjectInputStream oNoLoc = new ObjectInputStream(noLoc);
-                HashMap<String, String> tempMap = (HashMap<String, String>) oNoLoc.readObject();
-                noLoc.close();
-                oNoLoc.close();
-                noLocData.remove(key);
-                tempMap.remove(key);
-                objectOutputStreamNoLoc.writeObject(tempMap);
-            } catch (Exception e) {
-                //System.err.println(e.toString());
-                e.printStackTrace();
-            }
-        }
+
     }
-}
+
 
 
