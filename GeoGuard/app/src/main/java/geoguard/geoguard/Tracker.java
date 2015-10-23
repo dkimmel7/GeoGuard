@@ -34,7 +34,7 @@ public class Tracker extends Service implements LocationListener{
     /* Controls frequency of location updates
      * Application will only receive updates when location changed via distance and time passed
      */
-    private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 10; // 10 meters
+    private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 5; // 5 meters
     private static final long MIN_TIME_BW_UPDATES = 1 * 60 * 1000; // 1 minute (in ms)
 
     public Tracker(Context context) {
@@ -52,7 +52,7 @@ public class Tracker extends Service implements LocationListener{
             isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
             if(!isGPSEnabled && !isNetworkEnabled) {
-                // Do something
+                return null; // user should be prompted to enable gps in location class
             } else {
                 // If network provider OR/AND GPS is enabled, application can get location
                 this.canGetLocation = true;
