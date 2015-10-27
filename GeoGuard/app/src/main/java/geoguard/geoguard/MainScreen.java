@@ -9,6 +9,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
+import com.parse.Parse;
+import com.parse.ParseObject;
+
 
 public class MainScreen extends Activity implements View.OnClickListener {
 
@@ -23,6 +26,14 @@ public class MainScreen extends Activity implements View.OnClickListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_screen);
+        // Enable Local Datastore.
+        Parse.enableLocalDatastore(this);
+
+        Parse.initialize(this, "FAnQXaYIH3v9tMOzMG6buNMOnpDPwZZybELUFBmr", "hwOkh0Z11ZNskikNFsERhPDPT1wzdLj1SX9z5wZP");
+        //allows for data to be stored in parse
+        ParseObject testObject = new ParseObject("TestObject");
+        testObject.put("foo", "bar");
+        testObject.saveInBackground();
 
         btnHomeBase = (Button) findViewById(R.id.btnHomeBase);
         btnSettings = (Button) findViewById(R.id.btnSettings);
