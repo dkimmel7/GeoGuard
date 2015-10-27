@@ -4,11 +4,13 @@ import android.app.Activity;
 import android.content.Context;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.text.method.ScrollingMovementMethod;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -27,6 +29,8 @@ import java.util.TreeMap;
 public class Insert extends ActionBarActivity implements View.OnClickListener {
     Button bEnter;
     EditText editKey, editValue;
+    TextView textList;
+
     final String noLocString = "";
 
     @Override
@@ -35,13 +39,32 @@ public class Insert extends ActionBarActivity implements View.OnClickListener {
         Context context = this;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_insert);
+        textList = (TextView) findViewById(R.id.textList);
+        loadText();
         editKey = (EditText) findViewById(R.id.editKey);
         editValue = (EditText) findViewById(R.id.editValue);
         bEnter = (Button) findViewById(R.id.bEnter);
         editKey.getText();
         bEnter.setOnClickListener(this);
     }
-
+    private void loadText() {
+        HashMap<String, TreeMap<String,String>> temp = null;
+        try {
+            FileInputStream noLoc = openFileInput(filename);
+            ObjectInputStream oNoLoc = new ObjectInputStream(noLoc);
+            temp = (HashMap<String, TreeMap<String, String>>) oNoLoc.readObject();
+            noLoc.close();
+            oNoLoc.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        String s = "";
+        if(temp != null) {
+            TreeMap<String, String> tempT = temp.get("");
+            s = tempT.toString();
+        }
+        textList.setMovementMethod(new ScrollingMovementMethod());
+        textList.setText(s);}
     @Override
     public void onClick(View view) {
         switch(view.getId()) {
@@ -50,9 +73,18 @@ public class Insert extends ActionBarActivity implements View.OnClickListener {
                     printKeysNoLoc();
                 } else {
                     System.out.println("Key = ");
+                    String tempo = textList.getText().toString();
                     System.out.println(String.valueOf(editKey.getText()));
                     System.out.println("Value = ");
                     System.out.println(String.valueOf(editValue.getText()));
+                    textList.append("Key = ");
+                    textList.append(String.valueOf(editKey.getText()));
+                    textList.append(" Value = ");
+                    textList.append(String.valueOf(editValue.getText()));
+                    textList.append("\n");
+                    System.out.println(tempo);
+                    //textList.setText(tempo);
+
                     storePassword("", editKey.getText().toString(), editValue.getText().toString());
                     //editKey and editValue are cleared after button click
                     editKey.setText("");
@@ -68,8 +100,8 @@ public class Insert extends ActionBarActivity implements View.OnClickListener {
     private ObjectOutputStream objectOutputStreamLoc;
     private ObjectOutputStream objectOutputStreamNoLoc;
     private String filename = "loc";
-    private String filenameNoLoc = "noLoc";
-    private HashMap<String, TreeMap<String,String>> noLocData = new HashMap<>();
+    private HashMap<String, TreeMap<String,String>> noLocData;
+    /*
     public void initOutputStreams() {
 
         try {
@@ -85,7 +117,7 @@ public class Insert extends ActionBarActivity implements View.OnClickListener {
             // System.err.print(e.getMessage());
         }
         return;
-    }
+    }*//*
     public void close() {
         try {
             objectOutputStreamNoLoc.close();
@@ -97,9 +129,29 @@ public class Insert extends ActionBarActivity implements View.OnClickListener {
             System.err.println(e.toString());
         }
 
-    }
+    }*/
     //This is the function to add a password which is not geo tagged
     public void storePassword(String location,String key, String value) {
+        File file = getFilesDir();
+        //If the file which contains the data exists, read it into
+        //noLocData. Else, initialize noLocData to a new HashMap
+
+            try {
+                FileInputStream noLoc = openFileInput(filename);
+                ObjectInputStream oNoLoc = new ObjectInputStream(noLoc);
+                    noLocData = (HashMap<String, TreeMap<String, String>>) oNoLoc.readObject();
+                    noLoc.close();
+                    oNoLoc.close();
+            } catch (Exception e) {
+                System.err.println(e.toString());
+                e.printStackTrace();
+            }
+        if(! (noLocData == null)) {
+            System.out.println("file exists:120");
+        } else {
+            System.err.println("File does NOT exist:133");
+            noLocData = new HashMap<>();
+        }
         if(noLocData == null) {
             System.out.println("NOLOCDATA IS NULL"); return;
         } else if(noLocData.isEmpty()) {
@@ -125,7 +177,7 @@ public class Insert extends ActionBarActivity implements View.OnClickListener {
 
         try {
             File tempFile = getFilesDir();
-            System.out.println(tempFile+" this is tempFile");
+            //System.out.println(tempFile+" this is tempFile");
             //Creates a new fileOutputStream and sets append to false which means
             // it overwrites the file
             FileOutputStream noLocStream = openFileOutput(filename, MODE_PRIVATE);
@@ -142,17 +194,13 @@ public class Insert extends ActionBarActivity implements View.OnClickListener {
     public void printKeysNoLoc() {
         try {
             File tempFile = getFilesDir();
-            //FileInputStream noLoc = new FileInputStream(tempFile+filenameNoLoc);
             FileInputStream noLoc = openFileInput(filename);
             ObjectInputStream oNoLoc = new ObjectInputStream(noLoc);
             try {
                 HashMap<String, TreeMap<String, String>> tempMap = (HashMap<String, TreeMap<String, String>>) oNoLoc.readObject();
                 noLoc.close();
                 oNoLoc.close();
-                //System.out.println(tempMap.toString());
-                //if(!(tempMap.get("") == null)) {
                     System.out.println(tempMap.toString());
-                //} else System.out.println("tempMap is empty");
             }catch(Exception e) {
                 e.printStackTrace();
             }
@@ -160,12 +208,14 @@ public class Insert extends ActionBarActivity implements View.OnClickListener {
             System.err.println(e.toString());
             e.printStackTrace();
         }
-        //System.out.println(noLocData.keySet());
     }
     //Retrieve the password associated with the given key
     // and returns geotagged password if locTagged is true
     public String retrievePassword(String key, boolean locTagged) {
-
+        if(noLocData == null) {
+            System.err.println("NOLOCDATA IS NULL IN RETRIEVEPASSWORD");
+            return null;
+        }
             try {
                 File tempFile = getFilesDir();
                 FileInputStream loc = openFileInput(filename);
