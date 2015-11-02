@@ -45,6 +45,26 @@
         android:layout_below="@+id/editValue"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
+    <ScrollView
+        android:id="@+id/scrollView1"
+        android:layout_width="fill_parent"
+        android:layout_height="100dp" >
+
+
+    </ScrollView>
+
+    <TextView
+        android:id="@+id/textList"
+        android:scrollbars="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:text=""
+        android:layout_below="@+id/bEnter"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
+
+        <requestFocus />
+    </TextView>
 
 
 </RelativeLayout>
