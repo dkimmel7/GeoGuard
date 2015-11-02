@@ -24,7 +24,7 @@
             android:layout_centerInParent="true"
             android:textSize="30pt"
             android:textColor="#00AA00"
-            android:text="GeoLuard"
+            android:text="GeoGuard"
             />
     </RelativeLayout>
     <LinearLayout

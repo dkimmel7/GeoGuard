@@ -1,6 +1,7 @@
 package geoguard.geoguard;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.app.ActionBarActivity;
@@ -13,8 +14,12 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 
-public class Unlock extends Activity {
+
+public class Unlock extends Activity{
 
     Button btnEnter;
     EditText password;
@@ -46,22 +51,6 @@ public class Unlock extends Activity {
 
     }
 
- /*   @Override
-    public void onClick(View v){
-        switch(v.getId()){
-            case R.id.btnEnter:
-                Intent intent = new Intent(getApplicationContext(), SignUp.class);
-                startActivity(intent);
-                break;
-            case R.id.signup:
-                Intent intent2 = new Intent(getApplicationContext(), SignUp.class);
-                startActivity(intent2);
-                break;
-            default:
-                break;
-        }
-    }
-*/
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
