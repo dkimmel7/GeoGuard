@@ -5,8 +5,12 @@
       <GradleProjectSettings>
         <option name="distributionType" value="LOCAL" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
+<<<<<<< HEAD
         <option name="gradleHome" value="C:\Program Files\Android\Android Studio\gradle\gradle-2.4" />
 <<<<<<< HEAD
+=======
+        <option name="gradleHome" value="X:\Program Files (x86)\Android\studio\gradle\gradle-2.2.1" />
+>>>>>>> parent of 7004d2c... Mobile screen shows list of mobile passwords and passwords when clicked
         <option name="gradleJvm" value="1.7" />
 =======
         <option name="gradleJvm" value="1.8" />

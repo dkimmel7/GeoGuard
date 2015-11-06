@@ -11,7 +11,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -70,10 +69,9 @@ public class Insert extends ActionBarActivity implements View.OnClickListener {
     public void onClick(View view) {
         switch(view.getId()) {
             case R.id.bEnter:
-                //if(editKey.getText().toString().equals("TEST")) {
-                //    printKeysNoLoc();
-                //} else {
-                    Toast.makeText(getBaseContext(), "password entered", Toast.LENGTH_SHORT).show();
+                if(editKey.getText().toString().equals("TEST")) {
+                    printKeysNoLoc();
+                } else {
                     System.out.println("Key = ");
                     String tempo = textList.getText().toString();
                     System.out.println(String.valueOf(editKey.getText()));
@@ -91,7 +89,7 @@ public class Insert extends ActionBarActivity implements View.OnClickListener {
                     //editKey and editValue are cleared after button click
                     editKey.setText("");
                     editValue.setText("");
-               // }
+                }
                 break;
         }
     }
@@ -145,6 +143,7 @@ public class Insert extends ActionBarActivity implements View.OnClickListener {
                     noLoc.close();
                     oNoLoc.close();
             } catch (Exception e) {
+                System.err.println(e.toString());
                 e.printStackTrace();
             }
         if(! (noLocData == null)) {
