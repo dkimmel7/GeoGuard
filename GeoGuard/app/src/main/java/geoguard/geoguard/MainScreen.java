@@ -1,9 +1,11 @@
 package geoguard.geoguard;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.telephony.TelephonyManager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -11,6 +13,9 @@ import android.widget.Button;
 
 import com.parse.Parse;
 import com.parse.ParseObject;
+import android.provider.Settings.Secure;
+
+import java.util.UUID;
 
 
 public class MainScreen extends Activity implements View.OnClickListener {
@@ -29,10 +34,20 @@ public class MainScreen extends Activity implements View.OnClickListener {
         // Enable Local Datastore.
         Parse.enableLocalDatastore(this);
 
+        //code for getting a unique device id
+        final TelephonyManager tm = (TelephonyManager) getBaseContext().getSystemService(Context.TELEPHONY_SERVICE);
+
+        final String tmDevice, tmSerial, androidId;
+        tmDevice = "" + tm.getDeviceId();
+        tmSerial = "" + tm.getSimSerialNumber();
+        androidId = "" + android.provider.Settings.Secure.getString(getContentResolver(), android.provider.Settings.Secure.ANDROID_ID);
+
+        UUID deviceUuid = new UUID(androidId.hashCode(), ((long)tmDevice.hashCode() << 32) | tmSerial.hashCode());
+        String deviceId = deviceUuid.toString();
         Parse.initialize(this, "FAnQXaYIH3v9tMOzMG6buNMOnpDPwZZybELUFBmr", "hwOkh0Z11ZNskikNFsERhPDPT1wzdLj1SX9z5wZP");
         //allows for data to be stored in parse
         ParseObject testObject = new ParseObject("TestObject");
-        testObject.put("foo", "bar");
+        testObject.put("foo", deviceId);
         testObject.saveInBackground();
 
         btnHomeBase = (Button) findViewById(R.id.btnHomeBase);
