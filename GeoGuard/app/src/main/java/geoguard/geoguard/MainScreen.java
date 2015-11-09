@@ -6,15 +6,23 @@ import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.telephony.TelephonyManager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
+import com.parse.FindCallback;
+import com.parse.GetCallback;
 import com.parse.Parse;
 import com.parse.ParseObject;
+import com.parse.ParseQuery;
+import com.parse.ParseException;
+
 import android.provider.Settings.Secure;
 
+
+import java.util.List;
 import java.util.UUID;
 
 
@@ -43,12 +51,47 @@ public class MainScreen extends Activity implements View.OnClickListener {
         androidId = "" + android.provider.Settings.Secure.getString(getContentResolver(), android.provider.Settings.Secure.ANDROID_ID);
 
         UUID deviceUuid = new UUID(androidId.hashCode(), ((long)tmDevice.hashCode() << 32) | tmSerial.hashCode());
-        String deviceId = deviceUuid.toString();
+        final String deviceId = deviceUuid.toString();
         Parse.initialize(this, "FAnQXaYIH3v9tMOzMG6buNMOnpDPwZZybELUFBmr", "hwOkh0Z11ZNskikNFsERhPDPT1wzdLj1SX9z5wZP");
         //allows for data to be stored in parse
-        ParseObject testObject = new ParseObject("TestObject");
-        testObject.put("foo", deviceId);
-        testObject.saveInBackground();
+       // ParseObject testObject = new ParseObject("TestObject");
+       // testObject.put("foo", deviceId);
+       // testObject.saveInBackground();
+        final ParseObject tableName = new ParseObject("Users");
+        //tableName.put("username", "user");
+        //tableName.saveInBackground();// because of final?
+       // tableName.put("columnOne", "string"); //string
+       // tableName.put("columnTwo", 12); //integer
+        //tableName.put("columnThree", x); //variable
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("Users");
+        query.whereEqualTo("deviceID", deviceId);
+        query.findInBackground(new FindCallback<ParseObject>() {
+            public void done(List<ParseObject> idList, ParseException e) {
+                if (e == null) {
+                    if (idList.size() > 0)
+                        Log.d("deviceID", "Retrieved " + idList.size() + " deviceIDs");
+                    else {
+                        ParseQuery<ParseObject> query = ParseQuery.getQuery("Users");
+                        query.findInBackground(new FindCallback<ParseObject>() {
+                            public void done(List<ParseObject> theSize, ParseException e) {
+                                if (e == null) {
+                                    tableName.put("username", "user" + theSize.size());
+                                    tableName.saveInBackground();
+                                } else {
+                                    Log.d("score", "Error: " + e.getMessage());
+                                }
+                            }
+                        });
+                        tableName.put("deviceID", deviceId);
+
+                    }
+                } else {
+                    Log.d("score", "Error: " + e.getMessage());
+                }
+            }
+        });
+
+
 
         btnHomeBase = (Button) findViewById(R.id.btnHomeBase);
         btnSettings = (Button) findViewById(R.id.btnSettings);
