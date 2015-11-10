@@ -66,5 +66,15 @@
         <requestFocus />
     </TextView>
 
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Save Location?"
+        android:id="@+id/checkBox"
+        android:checked="false"
+        android:layout_below="@+id/bEnter"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
 
 </RelativeLayout>

@@ -9,6 +9,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,8 +32,11 @@ public class Insert extends ActionBarActivity implements View.OnClickListener {
     Button bEnter;
     EditText editKey, editValue;
     TextView textList;
+    CheckBox checkbox;
+    Tracker gps;
 
     final String noLocString = "";
+    String locString = "1289347 123847";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +44,8 @@ public class Insert extends ActionBarActivity implements View.OnClickListener {
         Context context = this;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_insert);
+        gps = new Tracker(Insert.this);
+        checkbox = (CheckBox) findViewById(R.id.checkBox);
         textList = (TextView) findViewById(R.id.textList);
         loadText();
         editKey = (EditText) findViewById(R.id.editKey);
@@ -65,29 +71,54 @@ public class Insert extends ActionBarActivity implements View.OnClickListener {
             s = tempT.toString();
         }
         textList.setMovementMethod(new ScrollingMovementMethod());
-        textList.setText(s);}
-    @Override
+        textList.setText("");}
+    private void locationStuff() {
+        if (gps.canGetLocation()) {
+            double latitude = gps.getLatitude();
+            double longitude = gps.getLongitude();
+            locString = Double.toString(latitude);
+            locString += " " + Double.toString(longitude);
+
+            Toast.makeText(
+                    getApplicationContext(),
+                    "Your Location is -\nLat: " + latitude + "\nLong: "
+                            + longitude, Toast.LENGTH_SHORT).show();
+        } else {
+            // Display alert to turn on GPS
+            gps.showSettingsAlert();
+        }
+    }
     public void onClick(View view) {
         switch(view.getId()) {
             case R.id.bEnter:
                 //if(editKey.getText().toString().equals("TEST")) {
                 //    printKeysNoLoc();
                 //} else {
+                    locationStuff();
                     Toast.makeText(getBaseContext(), "password entered", Toast.LENGTH_SHORT).show();
                     System.out.println("Key = ");
                     String tempo = textList.getText().toString();
                     System.out.println(String.valueOf(editKey.getText()));
                     System.out.println("Value = ");
                     System.out.println(String.valueOf(editValue.getText()));
-                    textList.append("Key = ");
+                    /*textList.append("Key = ");
                     textList.append(String.valueOf(editKey.getText()));
                     textList.append(" Value = ");
                     textList.append(String.valueOf(editValue.getText()));
-                    textList.append("\n");
+                    textList.append("\n");*/
                     System.out.println(tempo);
                     //textList.setText(tempo);
+                    if(checkbox.isChecked()) {
+                        storePassword(locString, editKey.getText().toString(), editValue.getText().toString());
+                        System.out.print("checkbox is checked \n");
+                        System.out.println(locString);
+                    } else {
+                        storePassword(noLocString, editKey.getText().toString(), editValue.getText().toString());
+                        System.out.print("checkbox is NOT checked \n");
+                        System.out.println(noLocString);
 
-                    storePassword("", editKey.getText().toString(), editValue.getText().toString());
+                    }
+
                     //editKey and editValue are cleared after button click
                     editKey.setText("");
                     editValue.setText("");

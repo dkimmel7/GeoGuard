@@ -31,6 +31,7 @@ public class Location extends AppCompatActivity {
                     double latitude = gps.getLatitude();
                     double longitude = gps.getLongitude();
 
+
                     Toast.makeText(
                             getApplicationContext(),
                             "Your Location is -\nLat: " + latitude + "\nLong: "
