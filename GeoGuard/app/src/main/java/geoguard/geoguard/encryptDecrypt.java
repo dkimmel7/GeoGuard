@@ -2,11 +2,16 @@ package geoguard.geoguard;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Paint;
 
 
-
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
+import java.util.Arrays;
 
 import javax.crypto.Cipher;
 
@@ -18,32 +23,83 @@ import javax.crypto.spec.SecretKeySpec;
  */
 public class encryptDecrypt {
 
-    public static byte[] masterKeyGenerate(byte[] password, Context ctx) throws Exception{
-        SharedPreferences saltPref = ctx.getSharedPreferences("salt", ctx.MODE_PRIVATE);
 
+    private static void encryptDecryptFile(String inputFilename, String outputFilename, boolean encrypt , byte[] key, Context keyContext){
+        FileInputStream inputStream;
+        FileOutputStream outputStream;
+        //if(encrypt) {
+        //    buffSize = 15;
+       // }else{
+        //    buffSize = 16;
+        // }
+        try{
+            inputStream = keyContext.openFileInput(inputFilename);
+            outputStream = keyContext.openFileOutput(outputFilename, Context.MODE_PRIVATE);
+            int buffSize = (int)inputStream.getChannel().size();
+            byte[] buff = new byte[buffSize];
+            int reader = inputStream.read(buff);
+            while(reader != -1){
+                if(encrypt){
+                     buff = encryptBytes(key, keyContext, buff);
+                }else{
+                    buff = decryptBytes(key, keyContext, buff);
+                }
+                outputStream.write(buff);
+                //if(encrypt){
+                //    buff= new byte[15];
+                //}else{
+                //    buff = new byte[16];
+               //}
+
+                reader = inputStream.read(buff);
+            }
+
+            outputStream.close();
+            inputStream.close();
+        }catch (Exception e){
+            //probably b/c not a valid file
+            e.printStackTrace();
+        }
+
+    }
+
+
+
+    public static byte[] masterKeyGenerate(byte[] password, Context ctx) {
+        byte[] salt = new byte[16];
+        try {
+            FileInputStream inputStream = ctx.openFileInput("saltFile");
+            int buffSize = (int) inputStream.getChannel().size();
+            salt = new byte[buffSize];
+            int reader = 0;
+            while (reader != -1) {
+                reader = inputStream.read(salt);
+            }
+            inputStream.close();
+        }catch (FileNotFoundException e){
+            salt=saltGenerate(ctx);
+        }catch (Exception e){
+
+        }
         try{
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            byte[] salt = saltPref.getString("salt", "").getBytes("UTF-8");
-            if(salt.equals("")) {
-                salt=saltGenerate();
-                SharedPreferences.Editor edit = saltPref.edit();
-                edit.putString("salt", new String(salt,"UTF-8"));
-                edit.commit();
-            }
+
             byte[] master = new byte[password.length + salt.length];
             System.arraycopy(salt, 0, master, 0, salt.length);
             System.arraycopy(password, 0, master, salt.length, password.length);
             for(int i=0; i< 1024; i++) {
                 master = digest.digest(master);
             }
+            master = Arrays.copyOf(master, 16); // use only first 128 bit
             return master;
 
         }catch (Exception e){
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
+        return new byte[16];
     }
 
-    public static byte[] saltGenerate(){
+    public static byte[] saltGenerate(Context ctx){
         SecureRandom rando;
         try {
             rando = SecureRandom.getInstance("SHA1PRNG");
@@ -51,31 +107,60 @@ public class encryptDecrypt {
             throw new RuntimeException(e);
         }
         rando.setSeed(System.currentTimeMillis());
-        return rando.getSeed(16);
+        byte[] returnval = rando.getSeed(16);
+
+        try{
+            FileOutputStream outputStream = ctx.openFileOutput("saltFile", ctx.MODE_PRIVATE);
+            outputStream.write(returnval);
+            outputStream.close();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return returnval;
     }
 
-    public static byte[] encryptFile(byte[] key, Context ctx, byte[] toencypt) throws Exception{
-        String iv = ctx.getSharedPreferences("salt", ctx.MODE_PRIVATE).getString("salt","");
-        if(iv.equals("")){
-            //todo handle error
+    public static byte[] encryptBytes(byte[] key, Context ctx, byte[] toencypt) throws Exception{
+        byte[] iv = new byte[16];
+        try{
+            FileInputStream inputStream = ctx.openFileInput("saltFile");
+            int buffSize = (int) inputStream.getChannel().size();
+            iv = new byte[buffSize];
+            int reader = 0;
+            while (reader != -1) {
+                reader = inputStream.read(iv);
+            }
+            inputStream.close();
+
+        }catch(FileNotFoundException e){
+
         }
         SecretKeySpec secretKeySpec = new SecretKeySpec(key,"AES");
         Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-        cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec, new IvParameterSpec(iv.getBytes("UTF-8"),0,16));
+        cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec, new IvParameterSpec(iv));
 
         byte[] encrypted = cipher.doFinal(toencypt);
 
         return encrypted;
     }
 
-    public static byte[] decryptFile(byte[] key, Context ctx, byte[] todecrypt) throws Exception{
-        String iv = ctx.getSharedPreferences("salt", ctx.MODE_PRIVATE).getString("salt","");
-        if(iv.equals("")){
-            //todo handle error
+    public static byte[] decryptBytes(byte[] key, Context ctx, byte[] todecrypt) throws Exception{
+        byte[] iv = new byte[16];
+        try{
+            FileInputStream inputStream = ctx.openFileInput("saltFile");
+            int buffSize = (int) inputStream.getChannel().size();
+            iv = new byte[buffSize];
+            int reader = 0;
+            while (reader != -1) {
+                reader = inputStream.read(iv);
+            }
+            inputStream.close();
+        }catch(FileNotFoundException e){
+
         }
         SecretKeySpec secretKeySpec = new SecretKeySpec(key,"AES");
         Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-        cipher.init(Cipher.DECRYPT_MODE, secretKeySpec, new IvParameterSpec(iv.getBytes("UTF-8"),0,16));
+        IvParameterSpec spec = new IvParameterSpec(iv);
+        cipher.init(Cipher.DECRYPT_MODE, secretKeySpec, spec);
 
         byte[] decrypted = cipher.doFinal(todecrypt);
 

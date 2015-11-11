@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Base64;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,7 +17,9 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.util.Arrays;
 
 
 public class Unlock extends Activity{
@@ -24,6 +27,7 @@ public class Unlock extends Activity{
     Button btnEnter;
     EditText password;
     TextView btnSignup;
+    byte[] masterKey;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +49,7 @@ public class Unlock extends Activity{
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(), SignUp.class);
+                intent.putExtra("unlockContext", "test");
                 startActivity(intent);
             }
         });
@@ -76,30 +81,42 @@ public class Unlock extends Activity{
 
     @Override
     public void onBackPressed(){
-        //disable going back (doesnt work)
-        //todo look into this
         moveTaskToBack(true);
     }
+
+
 
     /*
     if the password equals what is stored launch main activity
     otherwise popup that its invalid
      */
-    //todo make things private
-    public void checkPassword(View v){
-        String pass1= password.getText().toString();
-
-        SharedPreferences userId = getApplicationContext().getSharedPreferences("userId", MODE_PRIVATE);
-        String pass2 = userId.getString("password", "");
-
-        if( pass2.equals("")) {
-            Toast.makeText(getBaseContext(), "no password found" , Toast.LENGTH_LONG).show();
-        }else if(!pass1.equals(pass2)){
-            Toast.makeText(getBaseContext(), "invalid password" , Toast.LENGTH_LONG).show();
-        }else{
-            Intent intent = new Intent(this, MainScreen.class);
-            startActivity(intent);
+    private void checkPassword(View v) {
+        try {
+            FileInputStream inputStream = openFileInput("passwordCheck");
+            int buffSize = (int) inputStream.getChannel().size();
+            byte[] buff = new byte[buffSize];
+            int reader = 0;
+            while (reader != -1) {
+                reader = inputStream.read(buff);
+            }
+            inputStream.close();
+            String pass = password.getText().toString();
+            encryptDecrypt ende = new encryptDecrypt();
+            masterKey = ende.masterKeyGenerate(Base64.decode(pass, Base64.DEFAULT), getApplicationContext());
+            System.out.println("masterkey:" + Arrays.toString(masterKey));
+            byte[] decrypted = ende.decryptBytes(masterKey, getApplicationContext(), buff);
+            if (Arrays.equals(decrypted, Base64.decode("password", Base64.DEFAULT))) {
+                Intent intent = new Intent(this, MainScreen.class);
+                startActivity(intent);
+            } else {
+                Toast.makeText(getBaseContext(), "invalid password", Toast.LENGTH_LONG).show();
+            }
+        } catch(FileNotFoundException e){
+            Toast.makeText(getBaseContext(), "Please Create Profile" , Toast.LENGTH_LONG).show();
+        }catch(Exception e){
+            Toast.makeText(getBaseContext(), "Invalid Password" , Toast.LENGTH_LONG).show();
         }
+
     }
 
 }
