@@ -39,6 +39,10 @@
             android:label="@string/title_activity_mobile_passwords" >
         </activity>
         <activity
+            android:name=".LocalPasswords"
+            android:label="@string/title_activity_local_passwords" >
+        </activity>
+        <activity
             android:name=".Insert"
             android:label="@string/title_activity_insert" >
         </activity>

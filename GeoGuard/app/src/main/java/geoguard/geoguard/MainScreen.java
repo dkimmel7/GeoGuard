@@ -148,8 +148,8 @@ public class MainScreen extends Activity implements View.OnClickListener {
                 startActivity(settings);
                 break;
             case R.id.btnLocalPass:
-                //Intent local = new Intent(this, LocalPasswords.class);
-                //startActivity(local);
+                Intent local = new Intent(this, LocalPasswords.class);
+                startActivity(local);
                 break;
             case R.id.btnMobilePass:
                 Intent mobile = new Intent(this, MobilePasswords.class);
