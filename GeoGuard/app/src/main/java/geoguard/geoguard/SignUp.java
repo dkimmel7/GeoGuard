@@ -1,10 +1,12 @@
 package geoguard.geoguard;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Base64;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -12,12 +14,19 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.util.Arrays;
+
 
 public class SignUp extends Activity implements View.OnClickListener{
 
     Button btnEnter;
     EditText password;
     EditText confirm;
+    byte[] masterKey;
+    Context unlockContext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,12 +76,12 @@ public class SignUp extends Activity implements View.OnClickListener{
     This takes the two password fields and compares them and checks they meet basic requirements
     todo check that strings are valid (alpha numeric)
      */
-    public void checkPassword(View v){
+    private void checkPassword(View v){
         //do they match?
-        SharedPreferences userId = getApplicationContext().getSharedPreferences("userId", MODE_PRIVATE);
-        String existingPass = userId.getString("password", null);
-
-        if(existingPass==(null) || existingPass.equals("")) {
+        try{
+            openFileInput("saltFile");
+            Toast.makeText(getBaseContext(), "profile already created", Toast.LENGTH_LONG).show();
+        }catch (Exception e){
             String pass1 = password.getText().toString();
             String pass2 = confirm.getText().toString();
             if (pass1.equals("")) {
@@ -83,17 +92,23 @@ public class SignUp extends Activity implements View.OnClickListener{
                 storePassword(pass1);
                 startMain(v);
             }
-        }else{
-            Toast.makeText(getBaseContext(), "profile already created", Toast.LENGTH_LONG).show();
         }
     }
 
     //todo Make encrypted password
     private void storePassword(String pass){
-        SharedPreferences.Editor edit = getApplicationContext().getSharedPreferences("userId",MODE_PRIVATE).edit();
-        edit.putString("password", pass);
-        edit.commit();
-        Toast.makeText(getApplicationContext(),"Password Saved", Toast.LENGTH_LONG).show();
+        encryptDecrypt encryptDecryptor = new encryptDecrypt();
+        try{
+            masterKey = encryptDecryptor.masterKeyGenerate(Base64.decode(pass, Base64.DEFAULT), getApplicationContext());
+            //SharedPreferences.Editor edit = getApplicationContext().getSharedPreferences("salt",MODE_PRIVATE).edit();
+            byte[] password = encryptDecryptor.encryptBytes(masterKey, getApplicationContext(), Base64.decode("password", Base64.DEFAULT));
+            FileOutputStream outputStream = openFileOutput("passwordCheck", MODE_PRIVATE);
+            outputStream.write(password);
+            outputStream.close();
+            Toast.makeText(getApplicationContext(),"Password Saved", Toast.LENGTH_LONG).show();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     public void startMain(View view){
