@@ -35,7 +35,7 @@ public class Location extends AppCompatActivity {
                     Toast.makeText(
                             getApplicationContext(),
                             "Your Location is -\nLat: " + latitude + "\nLong: "
-                                    + longitude, Toast.LENGTH_LONG).show();
+                                    + longitude + "\nradius" + gps.radius(36.975952,-122.05534399999999), Toast.LENGTH_LONG).show();
                 } else {
                     // Display alert to turn on GPS
                     gps.showSettingsAlert();

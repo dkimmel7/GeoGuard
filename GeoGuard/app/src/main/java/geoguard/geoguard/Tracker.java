@@ -129,6 +129,16 @@ public class Tracker extends Service implements LocationListener{
         return longitude;
     }
 
+    public float radius(double latitude, double longitude) {
+        Location curr = getLocation();
+        Location pin = new Location ("pin");
+        pin.setLatitude(latitude);
+        pin.setLongitude(longitude);
+
+        float distance = curr.distanceTo(pin);
+        return distance;
+    }
+
     public boolean canGetLocation() {
         return this.canGetLocation;
     }
