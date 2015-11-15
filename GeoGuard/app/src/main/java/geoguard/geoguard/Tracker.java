@@ -129,6 +129,7 @@ public class Tracker extends Service implements LocationListener{
         return longitude;
     }
 
+    // Gets the meters between the current location to set location
     public float radius(double latitude, double longitude) {
         Location curr = getLocation();
         Location pin = new Location ("pin");
