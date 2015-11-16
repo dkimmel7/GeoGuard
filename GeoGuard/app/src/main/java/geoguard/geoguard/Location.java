@@ -50,7 +50,7 @@ public class Location extends AppCompatActivity {
                     Toast.makeText(
                             getApplicationContext(),
                             "Your Location is -\nLat: " + latitude + "\nLong: "
-                                    + longitude + "\nradius" + gps.radius(36.975952,-122.05534399999999), Toast.LENGTH_LONG).show();
+                                    + longitude + "\nradius" + gps.radius(36.975952, -122.05534399999999), Toast.LENGTH_LONG).show();
                 } else {
                     // Display alert to turn on GPS
                     gps.showSettingsAlert();
@@ -61,27 +61,23 @@ public class Location extends AppCompatActivity {
         // Notification
         notification = new NotificationCompat.Builder(this);
         notification.setAutoCancel(true);
+    }
 
-        btnShowNotification = (Button) findViewById(R.id.show_notification);
-        btnShowNotification.setOnClickListener(new View.OnClickListener() {
-            // @Override
-            public void onClick(View view) {
-                // Build the notification
-                notification.setSmallIcon(R.drawable.notification_template_icon_bg);
-                notification.setTicker("This is a ticker");
-                notification.setWhen(System.currentTimeMillis());
-                notification.setContentTitle("Here is the title.");
-                notification.setContentText("I am the body text of your notification");
+    public void notifyButtonClicked(View view) {
+        // Build the notification
+        notification.setSmallIcon(R.drawable.notification_template_icon_bg);
+        notification.setTicker("This is a ticker");
+        notification.setWhen(System.currentTimeMillis());
+        notification.setContentTitle("Here is the title.");
+        notification.setContentText("I am the body text of your notification");
 
-           //     Intent intent = new Intent(this, Location.class);
-           //     PendingIntent pendingIntent = PendingIntent.getActivity(this , 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-           //     notification.setContentIntent(pendingIntent);
+        Intent intent = new Intent(this, Location.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this , 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        notification.setContentIntent(pendingIntent);
 
-                // Builds notification and issues it
-                NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-                nm.notify(uniqueID, notification.build());
-                }
-        });
+        // Builds notification and issues it
+        NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        nm.notify(uniqueID, notification.build());
     }
 
 }
