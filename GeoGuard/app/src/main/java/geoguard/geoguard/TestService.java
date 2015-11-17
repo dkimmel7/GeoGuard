@@ -12,7 +12,7 @@ import android.widget.Toast;
  */
 public class TestService extends Service {
 
-    Location loc;
+    Notification note;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -24,7 +24,9 @@ public class TestService extends Service {
         Toast.makeText(this, "Service Created", Toast.LENGTH_LONG).show();
         super.onCreate();
         //loc.check();
-        Log.d("Service@@@@@@@@@@@@@@", "App started@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+        note = new Notification();
+        note.push();
+        Log.d("Service111111", "App started@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
     }
 
     @Override
@@ -36,8 +38,9 @@ public class TestService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startID) {
         Toast.makeText(getApplicationContext(), "Service Working", Toast.LENGTH_LONG).show();
-        Log.d("Service@@@@@@@@@@@@@@", "App started@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-        //loc.check();
+        Log.d("Service222222", "App started@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+        note = new Notification();
+        note.push();
         return super.onStartCommand(intent, flags, startID);
 
 

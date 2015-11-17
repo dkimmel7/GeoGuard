@@ -2,6 +2,7 @@ package geoguard.geoguard;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -24,13 +25,14 @@ public class Location extends AppCompatActivity {
     // Notification
     NotificationCompat.Builder notification;
     private static final int uniqueID = 123456;
-    Button btnShowNotification;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_location);
+
+        Log.d("WHOAAOAOAOA", "SUPPPPPPS!!!!!!");
 
         // Create button (object) to push for geolocation
         btnShowLocation = (Button) findViewById(R.id.show_location);
