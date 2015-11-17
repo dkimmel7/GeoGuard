@@ -17,6 +17,12 @@ public class Notification extends AppCompatActivity {
     NotificationCompat.Builder notification;
     private static final int uniqueID = 123456;
 
+    public Notification() {
+        notification = new NotificationCompat.Builder(this);
+        notification.setAutoCancel(true);
+    }
+
+
     //notification = new NotificationCompat.Builder(this);
     //notification.setAutoCancel(true);
 
@@ -36,5 +42,6 @@ public class Notification extends AppCompatActivity {
         NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         nm.notify(uniqueID, notification.build());
     }
+
 
 }
