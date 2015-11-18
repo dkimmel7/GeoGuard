@@ -19,8 +19,8 @@ public class MyReceiver extends BroadcastReceiver {
         Log.d("Service", "Service started");
 
         // Start App on Boot start up
-        Intent App = new Intent(context, Location.class);
-        context.startService(App);
+        //Intent App = new Intent(context, Location.class);
+        //context.startService(App);
 
     }
 }

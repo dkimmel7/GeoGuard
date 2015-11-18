@@ -11,7 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 /**
  * Created by dnalex on 11/17/2015.
  */
-public class Notification extends AppCompatActivity {
+public class Notification extends AppCompatActivity { // JUNK CLASS RIGHT NOW
 
     // Notification
     NotificationCompat.Builder notification;
@@ -21,7 +21,6 @@ public class Notification extends AppCompatActivity {
         notification = new NotificationCompat.Builder(this);
         notification.setAutoCancel(true);
     }
-
 
     //notification = new NotificationCompat.Builder(this);
     //notification.setAutoCancel(true);

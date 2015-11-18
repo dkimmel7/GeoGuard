@@ -5,10 +5,13 @@ import android.app.PendingIntent; // for notification
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
+import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat; // for notifications
 import android.util.Log; // For testing background boot
 import android.widget.Toast;
+
+import static geoguard.geoguard.Notification.*;
 
 /**
  * Created by dnalex on 11/16/2015.
@@ -24,16 +27,21 @@ public class TestService extends Service {
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
+    // Called when the Service object is instantiated or when service is created
+    // Events in this method occur only once
     @Override
     public void onCreate() {
+        // Debugging
         Toast.makeText(this, "Service Created", Toast.LENGTH_LONG).show();
+        Log.d("Service", "Created");
+
+        // Required
         super.onCreate();
 
+        // Builds single notification
         notification = new NotificationCompat.Builder(this);
         notification.setAutoCancel(true);
 
-        push();
-        Log.d("Service111111", "App started@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
     }
 
     @Override
@@ -42,16 +50,27 @@ public class TestService extends Service {
         super.onDestroy();
     }
 
+    // Called every time a client starts the service using startService(Intent, intent)
     @Override
     public int onStartCommand(Intent intent, int flags, int startID) {
+        // Debugging
         Toast.makeText(getApplicationContext(), "Service Working", Toast.LENGTH_LONG).show();
-        Log.d("Service222222", "App started@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+        Log.d("Service", "Working");
 
-        push();
-        return super.onStartCommand(intent, flags, startID);
+        // Issue Notification
+        notification();
+
+        //SystemClock.sleep(20000);
+
+        //notification();
+
+
+        // Repeat the service in background
+        return super.onStartCommand(intent, flags, startID); // Could use START_STICKY
     }
 
-    public void push() {
+
+    public void notification() {
         // Build the notification
         notification.setSmallIcon(R.drawable.notification_template_icon_bg);
         notification.setTicker("This is a ticker");
@@ -67,6 +86,5 @@ public class TestService extends Service {
         NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         nm.notify(uniqueID, notification.build());
     }
-
 
 }
