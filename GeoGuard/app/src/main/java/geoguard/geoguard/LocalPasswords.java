@@ -45,62 +45,69 @@ import java.util.TreeMap;
 
 
 public class LocalPasswords extends ActionBarActivity {
-    private String filename = "loc";
+    final private String filename = "loc";
     private HashMap<String, TreeMap<String,String>> data;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_local_passwords);
-        createFile();
+        data = createFile(filename);
         if(data != null) {
             LinearLayout ll = (LinearLayout) findViewById(R.id.ll);
             TreeMap<String, String> tree = data.get("");
             int i = 0;
             for(final Map.Entry<String, TreeMap<String,String>> entry : data.entrySet()) {
+                if (entry.getKey().equals("")) {
+                    System.out.println("Continue");
+                    continue;
+                }
                 final TreeMap<String, String> hashEntry = entry.getValue();
+                for (final Map.Entry<String, String> treeEntry : hashEntry.entrySet()) {
+                    System.out.println("Location = " + entry.getKey() + " name = " + treeEntry.getKey() + " value = " + treeEntry.getValue());
 
-                System.out.printf("Location: %s Key : %s and Value: %s %n", entry.getKey() ,hashEntry.ceilingKey(""), hashEntry.get(hashEntry.ceilingKey("")));
-
-                Button myButton = new Button(this);
-                myButton.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-                        ViewGroup.LayoutParams.WRAP_CONTENT));
-                myButton.setId(i);
-                myButton.setText(hashEntry.ceilingKey(""));
-                myButton.setOnClickListener(new View.OnClickListener() {
-                    public void onClick(View v) {
-                        System.out.println("BUTTON " + hashEntry.ceilingKey("") + "WAS CLICKED");
-                        AlertDialog.Builder builder = new AlertDialog.Builder(LocalPasswords.this);
-                        builder.setMessage("Location: \n" + entry.getKey() +"\n"+ "Password: " + hashEntry.get(hashEntry.ceilingKey("")) + "\ncopy to clipboard?").setCancelable(true);
-                        builder.setPositiveButton("Copy to clipboard", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                Toast.makeText(getBaseContext(), "Copied to clipboard(not implemented)", Toast.LENGTH_LONG).show();
-                            }
-                        });
-                        builder.setNegativeButton("Close", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                dialog.cancel();
-                            }
-                        });
-                        AlertDialog dialog = builder.create();
-                        dialog.show();
-                    }
-                });
-                ll.addView(myButton);
-                ++i;
+                    Button myButton = new Button(this);
+                    myButton.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                            ViewGroup.LayoutParams.WRAP_CONTENT));
+                    myButton.setId(i);
+                    myButton.setText(treeEntry.getKey());
+                    myButton.setOnClickListener(new View.OnClickListener() {
+                        public void onClick(View v) {
+                            System.out.println("BUTTON " + treeEntry.getKey() + "WAS CLICKED");
+                            AlertDialog.Builder builder = new AlertDialog.Builder(LocalPasswords.this);
+                            builder.setMessage("Location: \n" + entry.getKey() + "\n" + "Password: " + treeEntry.getValue() + "\ncopy to clipboard?").setCancelable(true);
+                            builder.setPositiveButton("Copy to clipboard", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    Toast.makeText(getBaseContext(), "Copied to clipboard(not implemented)", Toast.LENGTH_LONG).show();
+                                }
+                            });
+                            builder.setNegativeButton("Close", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    dialog.cancel();
+                                }
+                            });
+                            AlertDialog dialog = builder.create();
+                            dialog.show();
+                        }
+                    });
+                    ll.addView(myButton);
+                    ++i;
+                }
             }
         } else System.out.println("data is null");
     }
-    private void createFile() {
-        data = null;
+    private HashMap<String,TreeMap<String, String>> createFile(String filename) {
+        HashMap<String,TreeMap<String, String>> data = null;
         try {
             FileInputStream savedData = openFileInput(filename);
-            ObjectInputStream oNoLoc = new ObjectInputStream(savedData);
-            data = (HashMap<String, TreeMap<String, String>>) oNoLoc.readObject();
+            ObjectInputStream objStr = new ObjectInputStream(savedData);
+            data = (HashMap<String, TreeMap<String, String>>) objStr.readObject();
             savedData.close();
-            oNoLoc.close();
+            objStr.close();
+            return data;
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return null;
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

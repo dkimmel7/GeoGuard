@@ -111,11 +111,11 @@ public class Insert extends ActionBarActivity implements View.OnClickListener {
                     if(checkbox.isChecked()) {
                         storePassword(locString, editKey.getText().toString(), editValue.getText().toString());
                         System.out.print("checkbox is checked \n");
-                        System.out.println(locString);
+                        System.out.println("locString = " +locString);
                     } else {
                         storePassword(noLocString, editKey.getText().toString(), editValue.getText().toString());
                         System.out.print("checkbox is NOT checked \n");
-                        System.out.println(noLocString);
+                        System.out.println("noLocString = " + noLocString);
 
                     }
 
@@ -202,7 +202,12 @@ public class Insert extends ActionBarActivity implements View.OnClickListener {
             }
         } else {
             System.out.println("location is not \"\"");
-            TreeMap<String, String> pair = new TreeMap<>();
+            TreeMap<String, String> pair;
+            if(noLocData.containsKey(location)) {
+                pair = noLocData.get(location);
+            } else {
+                pair = new TreeMap<>();
+            }
             pair.put(key, value);
             noLocData.put(location, pair);
         }
