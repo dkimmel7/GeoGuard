@@ -46,11 +46,14 @@ import java.util.TreeMap;
 
 public class LocalPasswords extends ActionBarActivity {
     final private String filename = "loc";
+    Tracker gps;
     private HashMap<String, TreeMap<String,String>> data;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_local_passwords);
+        gps = new Tracker(LocalPasswords.this);
+
         data = createFile(filename);
         if(data != null) {
             LinearLayout ll = (LinearLayout) findViewById(R.id.ll);
@@ -59,6 +62,9 @@ public class LocalPasswords extends ActionBarActivity {
             for(final Map.Entry<String, TreeMap<String,String>> entry : data.entrySet()) {
                 if (entry.getKey().equals("")) {
                     System.out.println("Continue");
+                    continue;
+                } else if (!(showCurrLoc(entry.getKey(), getLocation()))) {
+                    System.out.println("not showCurrLoc on loc = " + entry.getKey());
                     continue;
                 }
                 final TreeMap<String, String> hashEntry = entry.getValue();
@@ -94,6 +100,30 @@ public class LocalPasswords extends ActionBarActivity {
                 }
             }
         } else System.out.println("data is null");
+    }
+    private String getLocation() {
+        String locString = null;
+        if (gps.canGetLocation()) {
+            double latitude = gps.getLatitude();
+            double longitude = gps.getLongitude();
+            locString = Double.toString(latitude);
+            locString += " " + Double.toString(longitude);
+
+            /*Toast.makeText(
+                    getApplicationContext(),
+                    "Your Location is -\nLat: " + latitude + "\nLong: "
+                            + longitude, Toast.LENGTH_SHORT).show();*/
+        } else {
+            // Display alert to turn on GPS
+            gps.showSettingsAlert();
+        }
+        return locString;
+    }
+    private boolean showCurrLoc(String there, String here) {
+        if(there.equals(here)) {
+            return true;
+        }
+        return false;
     }
     private HashMap<String,TreeMap<String, String>> createFile(String filename) {
         HashMap<String,TreeMap<String, String>> data = null;
