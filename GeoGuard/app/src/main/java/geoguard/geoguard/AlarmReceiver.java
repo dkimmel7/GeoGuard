@@ -15,24 +15,32 @@ import java.util.Calendar;
  */
 
 public class AlarmReceiver extends BroadcastReceiver {
-    // Restart service in 10 second intervals
-    private static final long REPEAT_TIME = 1000 * 10;
+    // Restart service in 2 second intervals
+    private static final long REPEAT = 1000 * 2;
 
+    /* Called on boot. Sets an alarm that will call a receiver
+     * in certain set timed intervals.
+     */
     @Override
     public void onReceive(Context context, Intent intent) {
         Log.d("Service", "Alarm Set");
 
+        // Set up Alarm service
         AlarmManager service = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        Intent i = new Intent(context, MyReceiver.class);
-        PendingIntent pending = PendingIntent.getBroadcast(context, 0, i, PendingIntent.FLAG_CANCEL_CURRENT);
-        Calendar cal = Calendar.getInstance();
-        // start 5 seconds after boot completed
-        cal.add(Calendar.SECOND, 5);
-        // fetch every 10 seconds
-        // InexactRepeating allows Android to optimize the energy consumption
-        service.setInexactRepeating(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), REPEAT_TIME, pending);
 
-        // service.setRepeating(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(),
-        // REPEAT_TIME, pending);
+        // Intent for receiver class; starts receiver initiating main service (GPS, notification)
+        Intent i = new Intent(context, NotifyReceiver.class);
+        PendingIntent pending = PendingIntent.getBroadcast(context, 0, i, PendingIntent.FLAG_CANCEL_CURRENT);
+
+        // Alarm initiates 5 seconds after initial boot
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.SECOND, 1);
+
+        // Schedules exact repeat of alarm
+        service.setRepeating(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), REPEAT, pending);
+
+        // Optimizes energy consumption; schedules alarm with inexact trigger req
+        // service.setInexactRepeating(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), REPEAT, pending);
+
     }
 }

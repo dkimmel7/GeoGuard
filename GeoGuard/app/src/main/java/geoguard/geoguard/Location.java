@@ -32,7 +32,7 @@ public class Location extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_location);
 
-        Log.d("WHOAAOAOAOA", "SUPPPPPPS!!!!!!");
+        Log.d("Location", "Accessed");
 
         // Create button (object) to push for geolocation
         btnShowLocation = (Button) findViewById(R.id.show_location);
@@ -52,7 +52,8 @@ public class Location extends AppCompatActivity {
                     Toast.makeText(
                             getApplicationContext(),
                             "Your Location is -\nLat: " + latitude + "\nLong: "
-                                    + longitude + "\nradius" + gps.radius(36.975952, -122.05534399999999), Toast.LENGTH_LONG).show();
+                                    + longitude + "\nradius" + gps.radius(36.975952,
+                                    -122.05534399999999), Toast.LENGTH_LONG).show();
                 } else {
                     // Display alert to turn on GPS
                     gps.showSettingsAlert();
@@ -65,6 +66,7 @@ public class Location extends AppCompatActivity {
         notification.setAutoCancel(true);
     }
 
+    // For testing notification
     public void notifyButtonClicked(View view) {
         // Build the notification
         notification.setSmallIcon(R.drawable.notification_template_icon_bg);

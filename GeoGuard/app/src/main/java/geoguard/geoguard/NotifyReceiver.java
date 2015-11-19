@@ -3,24 +3,20 @@ package geoguard.geoguard;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log; // Checking
+import android.util.Log;
 
 /**
  * Created by dnalex on 11/16/2015.
  */
-public class MyReceiver extends BroadcastReceiver {
+public class NotifyReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
 
         // Start service on boot up
-        Intent service = new Intent(context, TestService.class);
+        Intent service = new Intent(context, NotifyService.class);
         context.startService(service);
-        Log.d("Service", "Service started");
 
-        // Start App on Boot start up
-        //Intent App = new Intent(context, Location.class);
-        //context.startService(App);
-
+        Log.d("Service", "Notification Service Started");
     }
 }
