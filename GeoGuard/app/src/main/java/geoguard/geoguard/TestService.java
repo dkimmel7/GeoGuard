@@ -22,6 +22,7 @@ public class TestService extends Service {
     NotificationCompat.Builder notification;
     private static final int uniqueID = 123456;
 
+
     @Override
     public IBinder onBind(Intent intent) {
         throw new UnsupportedOperationException("Not yet implemented");
@@ -66,7 +67,7 @@ public class TestService extends Service {
 
 
         // Repeat the service in background
-        return super.onStartCommand(intent, flags, startID); // Could use START_STICKY
+        return START_STICKY; //this.onStartCommand(intent, flags, startID); // Could use START_STICKY // used to be super
     }
 
 
