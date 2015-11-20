@@ -153,10 +153,12 @@ public class Unlock extends Activity{
             inputStream.close();
             String pass = password.getText().toString();
             encryptDecrypt ende = new encryptDecrypt();
-            masterKey = ende.masterKeyGenerate(Base64.decode(pass, Base64.DEFAULT), getApplicationContext());
-            System.out.println("masterkey:" + Arrays.toString(masterKey));
+            //new String(pass, "UTF-8");
+            //masterKey = ende.masterKeyGenerate(Base64.decode(pass, Base64.DEFAULT), getApplicationContext());
+            masterKey = ende.masterKeyGenerate(pass.getBytes("UTF-8"), getApplicationContext());
+
             byte[] decrypted = ende.decryptBytes(masterKey, getApplicationContext(), buff);
-            if (Arrays.equals(decrypted, Base64.decode("password", Base64.DEFAULT))) {
+            if (Arrays.equals(decrypted, "password".getBytes("UTF-8"))) {
                 Intent intent = new Intent(this, MainScreen.class);
                 startActivity(intent);
             } else {

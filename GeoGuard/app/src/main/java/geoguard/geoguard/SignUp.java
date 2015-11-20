@@ -137,6 +137,9 @@ public class SignUp extends Activity implements View.OnClickListener{
      */
     private void checkPassword(View v){
         //do they match?
+        SharedPreferences.Editor settings = getSharedPreferences("settings" , MODE_PRIVATE).edit();
+        settings.putInt("radius",10);
+        settings.commit();
 
         String pass1 = password.getText().toString();
         String pass2 = confirm.getText().toString();
@@ -153,9 +156,12 @@ public class SignUp extends Activity implements View.OnClickListener{
     private void storePassword(String pass){
         encryptDecrypt encryptDecryptor = new encryptDecrypt();
         try{
-            masterKey = encryptDecryptor.masterKeyGenerate(Base64.decode(pass, Base64.DEFAULT), getApplicationContext());
+            //masterKey = encryptDecryptor.masterKeyGenerate(Base64.decode(pass, Base64.DEFAULT), getApplicationContext());
+            masterKey = encryptDecryptor.masterKeyGenerate(pass.getBytes("UTF-8"), getApplicationContext());
             //SharedPreferences.Editor edit = getApplicationContext().getSharedPreferences("salt",MODE_PRIVATE).edit();
-            byte[] password = encryptDecryptor.encryptBytes(masterKey, getApplicationContext(), Base64.decode("password", Base64.DEFAULT));
+//            byte[] password = encryptDecryptor.encryptBytes(masterKey, getApplicationContext(), Base64.decode("password", Base64.DEFAULT));
+            byte[] password = encryptDecryptor.encryptBytes(masterKey, getApplicationContext(), "password".getBytes("UTF-8"));
+
             FileOutputStream outputStream = openFileOutput("passwordCheck", MODE_PRIVATE);
             outputStream.write(password);
             outputStream.close();

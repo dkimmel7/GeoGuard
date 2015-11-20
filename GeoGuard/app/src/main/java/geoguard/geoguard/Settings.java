@@ -137,8 +137,8 @@ public class Settings extends ActionBarActivity {
     private void storePassword(String pass){
         encryptDecrypt encryptDecryptor = new encryptDecrypt();
         try{
-            byte[] masterKey = encryptDecryptor.masterKeyGenerate(Base64.decode(pass, Base64.DEFAULT), getApplicationContext());
-            byte[] password = encryptDecryptor.encryptBytes(masterKey, getApplicationContext(), Base64.decode("password", Base64.DEFAULT));
+            byte[] masterKey = encryptDecryptor.masterKeyGenerate(pass.getBytes("UTF-8"), getApplicationContext());
+            byte[] password = encryptDecryptor.encryptBytes(masterKey, getApplicationContext(), "password".getBytes("UTF-8"));
             FileOutputStream outputStream = openFileOutput("passwordCheck", MODE_PRIVATE);
             outputStream.write(password);
             outputStream.close();
@@ -149,7 +149,43 @@ public class Settings extends ActionBarActivity {
     }
 
     private void changeRadius(View v){
+        final Dialog usrDialog = new Dialog(this);
+        usrDialog.setTitle("Change Radius:");
+        usrDialog.setContentView(R.layout.change_radius);
 
+        Button btnSmall = (Button)usrDialog.findViewById(R.id.btnSmall);
+        Button btnMedium = (Button)usrDialog.findViewById(R.id.btnMedium);
+        Button btnLarge = (Button)usrDialog.findViewById(R.id.btnLarge);
+
+        btnSmall.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SharedPreferences.Editor settings = getSharedPreferences("settings" , MODE_PRIVATE).edit();
+                settings.putInt("radius", 10);
+                settings.commit();
+                usrDialog.dismiss();
+            }
+        });
+        btnMedium.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SharedPreferences.Editor settings = getSharedPreferences("settings" , MODE_PRIVATE).edit();
+                settings.putInt("radius", 25);
+                settings.commit();
+                usrDialog.dismiss();
+            }
+        });
+        btnLarge.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SharedPreferences.Editor settings = getSharedPreferences("settings" , MODE_PRIVATE).edit();
+                settings.putInt("radius", 50);
+                settings.commit();
+                usrDialog.dismiss();
+            }
+        });
+
+        usrDialog.show();
     }
 
     @Override
