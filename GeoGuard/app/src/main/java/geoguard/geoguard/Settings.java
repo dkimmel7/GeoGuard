@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.SharedPreferences;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Base64;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -16,7 +17,7 @@ import android.widget.Toast;
 import java.io.FileOutputStream;
 
 
-public class Settings extends ActionBarActivity {
+public class Settings extends AppCompatActivity {
 
     Button btnUsernameChange;
     Button btnPasswordChange;
