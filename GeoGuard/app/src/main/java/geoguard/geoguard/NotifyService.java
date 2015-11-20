@@ -54,11 +54,11 @@ public class NotifyService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startID) {
         // Debugging
-        Toast.makeText(getApplicationContext(), "Service Working", Toast.LENGTH_LONG).show();
+        //Toast.makeText(getApplicationContext(), "Service Working", Toast.LENGTH_LONG).show();
         Log.d("Service", "Working");
 
         // Issue Notification
-        notification();
+        //notification(); // Commented out to avoid clutter of msgs when testing on master
 
         // Keeps the service running in the background
         return START_STICKY;

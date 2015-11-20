@@ -4,11 +4,8 @@ import android.app.Dialog;
 import android.content.SharedPreferences;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-<<<<<<< HEAD
 import android.support.v7.app.AppCompatActivity;
-=======
 import android.util.Base64;
->>>>>>> refs/remotes/origin/master
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
