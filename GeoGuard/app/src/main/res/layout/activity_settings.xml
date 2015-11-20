@@ -1,14 +1,68 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
-    tools:context="geoguard.geoguard.Settings">
+    tools:context=".Settings">
 
+
+<<<<<<< HEAD
     <TextView android:text="settings" android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/textView" />
 
 </RelativeLayout>
+=======
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_weight="100"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10pt"
+        android:layout_marginRight="10pt"
+        android:layout_marginTop="10pt">
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="130dp"
+            android:layout_centerInParent="true"
+            android:textSize="15pt"
+            android:textColor="#00AA00"
+            android:text="Settings"
+            />
+        <Button
+            android:layout_weight="1"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:textSize="8pt"
+            android:text="Change Username"
+            android:id="@+id/btnUsernameChange">
+        </Button>
+        <Button
+            android:layout_weight="1"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:textSize="8pt"
+            android:text="Change Password"
+            android:id="@+id/btnPasswordChange">
+        </Button>
+        <Button
+            android:layout_weight="1"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:textSize="8pt"
+            android:text="Change Search Radius"
+            android:id="@+id/btnRadius">
+        </Button>
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" />
+>>>>>>> refs/remotes/origin/master
 
+    </LinearLayout>
+</LinearLayout>

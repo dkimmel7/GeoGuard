@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Base64;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -14,10 +15,17 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.parse.FindCallback;
+import com.parse.Parse;
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.util.Arrays;
+import java.util.List;
 
 
 public class SignUp extends Activity implements View.OnClickListener{
@@ -25,8 +33,8 @@ public class SignUp extends Activity implements View.OnClickListener{
     Button btnEnter;
     EditText password;
     EditText confirm;
+    EditText username;
     byte[] masterKey;
-    Context unlockContext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +43,7 @@ public class SignUp extends Activity implements View.OnClickListener{
         btnEnter = (Button) findViewById(R.id.btnEnter);
         password = (EditText) findViewById(R.id.password);
         confirm = (EditText) findViewById(R.id.confirm);
+        username = (EditText) findViewById(R.id.username);
 
         btnEnter.setOnClickListener(this);
     }
@@ -65,11 +74,61 @@ public class SignUp extends Activity implements View.OnClickListener{
     public void onClick(View v){
         switch (v.getId()){
             case R.id.btnEnter:
-                checkPassword(v);
+                if(checkUserName(v))
+                    checkPassword(v);
                 break;
             default:
                 break;
         }
+    }
+
+    /*
+    takes the username and checks if its the local and if not updates the salt and encoded file
+    returns false if found existing username
+    todo check database
+     */
+    private boolean checkUserName(View v){
+
+        final byte[] salt= encryptDecrypt.saltGenerate(getApplicationContext());
+        final String id = username.getText().toString();
+
+        /*
+        Parse.initialize(this, "FAnQXaYIH3v9tMOzMG6buNMOnpDPwZZybELUFBmr", "hwOkh0Z11ZNskikNFsERhPDPT1wzdLj1SX9z5wZP");
+        final ParseObject tableName = new ParseObject("Users");
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("Users");
+        query.whereEqualTo("deviceID", id);
+        query.findInBackground(new FindCallback<ParseObject>() {
+            public void done(List<ParseObject> idList, ParseException e) {
+                if (e == null) {
+                    if (idList.size() > 0) {
+                        Log.d("userID", "Retrieved " + idList.size() + " deviceIDs");
+                        Toast.makeText(getApplicationContext(),"User Name taken", Toast.LENGTH_LONG).show();
+                    } else {
+                        tableName.put("userID", id);
+                        tableName.put("salt", salt);
+                        tableName.saveInBackground();
+                        */
+                        SharedPreferences.Editor settings = getSharedPreferences("settings" , MODE_PRIVATE).edit();
+                        settings.putString("userId",id);
+                        settings.commit();
+                        /*
+                        }
+                } else {
+                    Log.d("score", "Error: " + e.getMessage());
+                }
+            }
+        });
+        */
+        if (id.isEmpty() || id.length() < 3) {
+            username.setError("must be at least three characters");
+            return false;
+        }else{
+            username.setError(null);
+        }
+
+            if(getSharedPreferences("settings",MODE_PRIVATE).getString("userId","").equals(""))
+            return false;
+        return true;
     }
 
     /*
@@ -78,24 +137,19 @@ public class SignUp extends Activity implements View.OnClickListener{
      */
     private void checkPassword(View v){
         //do they match?
-        try{
-            openFileInput("saltFile");
-            Toast.makeText(getBaseContext(), "profile already created", Toast.LENGTH_LONG).show();
-        }catch (Exception e){
-            String pass1 = password.getText().toString();
-            String pass2 = confirm.getText().toString();
-            if (pass1.equals("")) {
-                Toast.makeText(getBaseContext(), "Invalid Password", Toast.LENGTH_LONG).show();
-            } else if (!pass1.equals(pass2)) {
-                Toast.makeText(getBaseContext(), "Passwords Must Match", Toast.LENGTH_LONG).show();
-            } else {
-                storePassword(pass1);
-                startMain(v);
-            }
+
+        String pass1 = password.getText().toString();
+        String pass2 = confirm.getText().toString();
+        if (pass1.equals("")) {
+            Toast.makeText(getBaseContext(), "Invalid Password", Toast.LENGTH_LONG).show();
+        } else if (!pass1.equals(pass2)) {
+            Toast.makeText(getBaseContext(), "Passwords Must Match", Toast.LENGTH_LONG).show();
+        } else {
+            storePassword(pass1);
+            startMain(v);
         }
     }
 
-    //todo Make encrypted password
     private void storePassword(String pass){
         encryptDecrypt encryptDecryptor = new encryptDecrypt();
         try{

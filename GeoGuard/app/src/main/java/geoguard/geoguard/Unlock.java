@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Base64;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -15,17 +16,25 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.parse.FindCallback;
+import com.parse.Parse;
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.util.Arrays;
+import java.util.List;
 
 
 public class Unlock extends Activity{
 
     Button btnEnter;
     EditText password;
+    EditText username;
     TextView btnSignup;
     byte[] masterKey;
 
@@ -36,12 +45,14 @@ public class Unlock extends Activity{
 
         btnEnter = (Button) findViewById(R.id.btnEnter);
         password = (EditText) findViewById(R.id.password);
+        username = (EditText) findViewById(R.id.username);
         btnSignup = (TextView) findViewById(R.id.signup);
 
         btnEnter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                checkPassword(v);
+                if(checkUserName(v))
+                   checkPassword(v);
             }
         });
 
@@ -85,6 +96,46 @@ public class Unlock extends Activity{
     }
 
 
+    private boolean checkUserName(View v) {
+
+        /*
+        final String id = username.getText().toString();
+        Parse.initialize(this, "FAnQXaYIH3v9tMOzMG6buNMOnpDPwZZybELUFBmr", "hwOkh0Z11ZNskikNFsERhPDPT1wzdLj1SX9z5wZP");
+        final ParseObject tableName = new ParseObject("Users");
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("Users");
+        query.whereEqualTo("deviceID", id);
+        query.findInBackground(new FindCallback<ParseObject>() {
+            public void done(List<ParseObject> idList, ParseException e) {
+                if (e == null) {
+                    if (idList.size() == 1) {
+                        Log.d("userID", "Retrieved " + idList.size() + " deviceIDs");
+                        if(!getSharedPreferences("settings",MODE_PRIVATE).getString("userId","").equals(id))
+                            updateUserProfile(idList.get(0));
+                    } else {
+                        Toast.makeText(getApplicationContext(),"No Profile Found", Toast.LENGTH_LONG).show();
+                    }
+                } else {
+                    Log.d("score", "Error: " + e.getMessage());
+                }
+            }
+        });
+        if(getSharedPreferences("settings",MODE_PRIVATE).getString("userId","").equals(""))
+            return false;
+            return true;
+            */
+        if (getSharedPreferences("settings", MODE_PRIVATE).getString("userId", "").equals("")) {
+            Toast.makeText(getApplicationContext(), "No Profile Found", Toast.LENGTH_LONG).show();
+            return false;
+        } else if (getSharedPreferences("settings", MODE_PRIVATE).getString("userId", "").equals(username.getText().toString())) {
+            return true;
+        }
+        Toast.makeText(getApplicationContext(), "Wrong profile", Toast.LENGTH_LONG).show();
+        return true;
+    }
+
+    private void updateUserProfile(ParseObject profile){
+        String id = (String) profile.get("userId");
+    }
 
     /*
     if the password equals what is stored launch main activity
@@ -112,7 +163,7 @@ public class Unlock extends Activity{
                 Toast.makeText(getBaseContext(), "invalid password", Toast.LENGTH_LONG).show();
             }
         } catch(FileNotFoundException e){
-            Toast.makeText(getBaseContext(), "Please Create Profile" , Toast.LENGTH_LONG).show();
+            Toast.makeText(getBaseContext(), "No Profile Found" , Toast.LENGTH_LONG).show();
         }catch(Exception e){
             Toast.makeText(getBaseContext(), "Invalid Password" , Toast.LENGTH_LONG).show();
         }
