@@ -150,7 +150,6 @@ public class SignUp extends Activity implements View.OnClickListener{
         }
     }
 
-    //todo Make encrypted password
     private void storePassword(String pass){
         encryptDecrypt encryptDecryptor = new encryptDecrypt();
         try{
