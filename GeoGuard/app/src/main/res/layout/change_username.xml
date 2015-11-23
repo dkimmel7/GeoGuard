@@ -16,6 +16,18 @@
         android:layout_marginLeft="10pt"
         android:layout_marginRight="10pt"
         android:layout_marginTop="10pt">
+        <TextView
+            android:id="@+id/text"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10pt"
+        android:layout_marginRight="10pt"
+        android:layout_marginTop="10pt">
         <EditText
             android:id="@+id/usernameChange"
             android:layout_width="fill_parent"
