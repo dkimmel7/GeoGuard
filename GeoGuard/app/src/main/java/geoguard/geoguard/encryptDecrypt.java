@@ -63,6 +63,31 @@ public class encryptDecrypt {
 
     }
 
+    private static void encryptDecryptFile(String filename, boolean encrypt , byte[] key, Context keyContext){
+        FileInputStream inputStream;
+        FileOutputStream outputStream;
+        try{
+            inputStream = keyContext.openFileInput(filename);
+            int buffSize = (int)inputStream.getChannel().size();
+            byte[] buff = new byte[buffSize];
+            int reader = inputStream.read(buff);
+            while(reader != -1){
+                if(encrypt){
+                    buff = encryptBytes(key, keyContext, buff);
+                }else{
+                    buff = decryptBytes(key, keyContext, buff);
+                }
+                reader = inputStream.read(buff);
+            }
+            inputStream.close();
+            outputStream = keyContext.openFileOutput(filename, Context.MODE_PRIVATE);
+            outputStream.write(buff);
+            outputStream.close();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
 
 
     public static byte[] masterKeyGenerate(byte[] password, Context ctx) {

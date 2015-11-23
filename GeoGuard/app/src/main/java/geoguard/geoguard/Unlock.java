@@ -30,9 +30,7 @@ import java.util.List;
 
 public class Unlock extends Activity{
 
-    Button btnEnter;
 
-    TextView btnSignup;
     byte[] masterKey;
 
     @Override
@@ -40,8 +38,8 @@ public class Unlock extends Activity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_unlock);
 
-        btnEnter = (Button) findViewById(R.id.btnEnter);
-        btnSignup = (TextView) findViewById(R.id.signup);
+        final Button btnEnter = (Button) findViewById(R.id.btnEnter);
+        final TextView btnSignup = (TextView) findViewById(R.id.signup);
 
         btnEnter.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -54,7 +52,6 @@ public class Unlock extends Activity{
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(), SignUp.class);
-                intent.putExtra("unlockContext", "test");
                 startActivity(intent);
             }
         });
@@ -122,17 +119,22 @@ public class Unlock extends Activity{
                 }
             }
         });
-
         new android.os.Handler().postDelayed(
                 new Runnable() {
                     public void run() {
-                        // On complete call either onSignupSuccess or onSignupFailed
+                        // On complete call either onSignupSuccess
                         // depending on success
+                        if (username.getError() != null) {
+                            progressDialog.dismiss();
+                            return;
+                        }
                         checkPassword();
                         progressDialog.dismiss();
                     }
-                }, 1000);
+                }, 3000);
     }
+
+
 
     /*
       precondition: profile already has been created with the required fields

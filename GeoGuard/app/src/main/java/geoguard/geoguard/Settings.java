@@ -67,7 +67,7 @@ public class Settings extends AppCompatActivity {
         btnSetHomeBase.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setHomeBase(v);
+                setHomeBase();
             }
         });
 
@@ -253,13 +253,13 @@ public class Settings extends AppCompatActivity {
         });
     }
 
-    private void setHomeBase(View v){
+    private void setHomeBase(){
         final Dialog usrDialog = new Dialog(this);
         usrDialog.setTitle("Set HomeBase:");
-        usrDialog.setContentView(R.layout.change_radius);
-        Button btnSmall = (Button)usrDialog.findViewById(R.id.btnSmall);
+        usrDialog.setContentView(R.layout.set_homebase);
+        Button btnSet = (Button)usrDialog.findViewById(R.id.btnSet);
 
-        btnSmall.setOnClickListener(new View.OnClickListener() {
+        btnSet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Tracker gps = new Tracker(getApplicationContext());
