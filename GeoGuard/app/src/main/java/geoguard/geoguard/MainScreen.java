@@ -39,6 +39,8 @@ public class MainScreen extends Activity implements View.OnClickListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_screen);
+
+        /*
         // Enable Local Datastore.
         Parse.enableLocalDatastore(this);
 
@@ -91,7 +93,7 @@ public class MainScreen extends Activity implements View.OnClickListener {
             }
         });
 
-
+*/
 
         btnHomeBase = (Button) findViewById(R.id.btnHomeBase);
         btnSettings = (Button) findViewById(R.id.btnSettings);
