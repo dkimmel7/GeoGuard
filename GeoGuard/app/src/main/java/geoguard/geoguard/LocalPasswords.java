@@ -36,6 +36,7 @@ import android.widget.LinearLayout;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.ScrollView;
 import android.widget.Toast;
+import android.location.Location;
 
 import java.io.FileInputStream;
 import java.io.ObjectInputStream;
@@ -46,14 +47,14 @@ import java.util.TreeMap;
 
 public class LocalPasswords extends ActionBarActivity {
     final private String filename = "loc";
-    Tracker gps;
+    private Tracker gps;
+
     private HashMap<String, TreeMap<String,String>> data;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_local_passwords);
         gps = new Tracker(LocalPasswords.this);
-
         data = createFile(filename);
         if(data != null) {
             LinearLayout ll = (LinearLayout) findViewById(R.id.ll);
@@ -61,9 +62,9 @@ public class LocalPasswords extends ActionBarActivity {
             int i = 0;
             for(final Map.Entry<String, TreeMap<String,String>> entry : data.entrySet()) {
                 if (entry.getKey().equals("")) {
-                    System.out.println("Continue");
+                    //System.out.println("Continue");
                     continue;
-                } else if (!(showCurrLoc(entry.getKey(), getLocation()))) {
+                } else if (!(showCurrLoc(entry.getKey(), getLocation(), 100))) {
                     System.out.println("not showCurrLoc on loc = " + entry.getKey());
                     continue;
                 }
@@ -101,6 +102,17 @@ public class LocalPasswords extends ActionBarActivity {
             }
         } else System.out.println("data is null");
     }
+    private double getDist(double lat1, double lon1, double lat2, double lon2) {
+        double R = 6372.8; // radius of Earth in KM
+        double dLat = Math.toRadians(lat2 - lat1);
+        double dLon = Math.toRadians(lon2 - lon1);
+        lat1 = Math.toRadians(lat1);
+        lat2 = Math.toRadians(lat2);
+
+        double a = Math.pow(Math.sin(dLat / 2),2) + Math.pow(Math.sin(dLon / 2),2) * Math.cos(lat1) * Math.cos(lat2);
+        double c = 2 * Math.asin(Math.sqrt(a));
+        return R * c * 1000; // returns in meters
+    }
     private String getLocation() {
         String locString = null;
         if (gps.canGetLocation()) {
@@ -108,7 +120,6 @@ public class LocalPasswords extends ActionBarActivity {
             double longitude = gps.getLongitude();
             locString = Double.toString(latitude);
             locString += " " + Double.toString(longitude);
-
             /*Toast.makeText(
                     getApplicationContext(),
                     "Your Location is -\nLat: " + latitude + "\nLong: "
@@ -119,8 +130,13 @@ public class LocalPasswords extends ActionBarActivity {
         }
         return locString;
     }
-    private boolean showCurrLoc(String there, String here) {
-        if(there.equals(here)) {
+    private boolean showCurrLoc(String there, String here,double radius) {
+        Location a = gps.getLocation();
+        double thereLat = Double.parseDouble(there.substring(0, there.indexOf(" ")).trim());
+        double  hereLat = Double.parseDouble(here.substring(0, here.indexOf(" ")).trim());
+        double thereLong = Double.parseDouble(there.substring(there.indexOf(" ")).trim());
+        double  hereLong = Double.parseDouble(here.substring (here.indexOf(" ")).trim());
+        if( getDist(thereLat,thereLong,hereLat,hereLong) >= 0 && getDist(thereLat,thereLong,hereLat,hereLong) <= radius) {
             return true;
         }
         return false;
@@ -139,6 +155,7 @@ public class LocalPasswords extends ActionBarActivity {
         }
         return null;
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
