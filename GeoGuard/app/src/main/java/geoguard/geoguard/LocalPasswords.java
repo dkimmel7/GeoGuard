@@ -82,11 +82,18 @@ public class LocalPasswords extends ActionBarActivity {
                             System.out.println("BUTTON " + treeEntry.getKey() + "WAS CLICKED");
                             AlertDialog.Builder builder = new AlertDialog.Builder(LocalPasswords.this);
                             builder.setMessage("Location: \n" + entry.getKey() + "\n" + "Password: " + treeEntry.getValue() + "\ncopy to clipboard?").setCancelable(true);
-                            builder.setPositiveButton("Copy to clipboard", new DialogInterface.OnClickListener() {
+                            builder.setPositiveButton("Copy", new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int id) {
                                     Toast.makeText(getBaseContext(), "Copied to clipboard(not implemented)", Toast.LENGTH_LONG).show();
                                 }
                             });
+                            builder.setNeutralButton("Remove", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    Toast.makeText(getBaseContext(), "Password removed(not implemented)", Toast.LENGTH_LONG).show();
+
+                                }
+                            });
+
                             builder.setNegativeButton("Close", new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int id) {
                                     dialog.cancel();
