@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
+import android.content.SharedPreferences;
 
 /**
  * Created by monca on 11/23/2015.
@@ -39,11 +40,24 @@ public class LocalDB {
             e.printStackTrace();
         }
     }
+    //Takes location and name to remove and removes the name+password pair from the TreeMap,
+    //if the TreeMap is empty after deletion, delete the location+TreeMap pair from the HashMap
     public void delete(String location, String name) {
+        if(data == null) {
+            return;
+        }
+        TreeMap<String, String> hashEntry = data.get(location);
+        hashEntry.remove(name);
+        if(hashEntry.isEmpty()) {
+            data.remove(location);
+        }
     }
+    //Returns an ArrayList of String arrays, each array contains the location, name, and password
+    //at array[0],array[1],and array[2], respectively.
+    //To use, call the function and save the result to a string array,
+    // e.g. String array[] = getAllPasswords();
     public ArrayList<String[]> getAllPasswords() {
         ArrayList<String[]> output = new ArrayList<>();
-        String entryData[] = new String[3];
         //entry.getKey is the Location and entry.getValue is the TreeMap containing all the
         //Name, Password pairs geotagged to the Location
         for(final Map.Entry<String, TreeMap<String,String>> entry : data.entrySet()) {
@@ -53,6 +67,7 @@ public class LocalDB {
             final TreeMap<String, String> hashEntry = entry.getValue();
             //Iterates through all the Name, Value pairs tagged to the Location entry.getKey()
             for (final Map.Entry<String, String> treeEntry : hashEntry.entrySet()) {
+                String entryData[] = new String[3];
                 System.out.println("Location = " + entry.getKey() + " name = " + treeEntry.getKey() + " password = " + treeEntry.getValue());
                 //entryData[0] will get the location which was tagged to this password
                 entryData[0] = entry.getKey();
@@ -64,8 +79,10 @@ public class LocalDB {
                 output.add(entryData);
             }
         }
+
         return output;
     }
+    //Returns the distance between two locations using 2 lat+long pairs using the Haversine formula
     private double getDist(double lat1, double lon1, double lat2, double lon2) {
         //Haversine formula to get distance on a sphere
         double R = 6372.8; // radius of Earth in KM
@@ -78,14 +95,24 @@ public class LocalDB {
         double c = 2 * Math.asin(Math.sqrt(a));
         return R * c * 1000; // returns in meters
     }
+    //Returns true if the HashMap contains the location which will be one of the HashMap's keys
+    //Retrusn false otherwise
     public boolean hasLocation(String location) {
+        if(data == null) {
+            return false;
+        }
         if(data.containsKey(location)) {
             return true;
         }
         return false;
     }
+    //Returns true if any TreeMap in the HashMap contains the name
+    //Iterates through the HashMap entries which are location+TreeMap pairs
+    //Then Iterates through the TreeMap which contains name+password pairs
     public boolean hasName(String name) {
-
+        if(data == null) {
+            return false;
+        }
         //Iterates through all entries in the Hash Map
         for(Map.Entry<String, TreeMap<String, String>> entry: data.entrySet()) {
             TreeMap<String, String> tree = entry.getValue();
@@ -97,16 +124,51 @@ public class LocalDB {
         }
         return false;
     }
-    public ArrayList<String[]> nearbyPasswords(double latitude, double longitude) {
-        String entry[] = new String[3];
-        ArrayList<String[]> output = new ArrayList<>();
-
-        //return output;
-        return null;
+    //Extracts the latitude and longitude of the input string which should be of the form "lat long"
+    //Saves the two doubles in a double array with two elements and returns it, returns null if
+    //parseDouble fails
+    private double[] stringToDoublePair(String input) {
+        double[] output = null;
+        try {
+            output = new double[2];
+            output[0] = Double.parseDouble(input.substring(0, input.indexOf(" ")));
+            output[1] = Double.parseDouble(input.substring(input.indexOf(" ")));
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        return output;
     }
+    //Returns an ArrayList of String arrays with all the locations, names, and passwords within
+    //the search radius of the location given as latitude and longitude.
+    public ArrayList<String[]> nearbyPasswords(double latitude, double longitude) {
+        SharedPreferences settings = context.getSharedPreferences("settings" , context.MODE_PRIVATE);
+        int radius = 0;
+        settings.getInt("radius", radius);
+        ArrayList<String[]> output = new ArrayList<>();
+        for (Map.Entry<String, TreeMap<String, String>> entry : data.entrySet()) {
+            double loc[] = stringToDoublePair(entry.getKey());
+            double taggedLat = loc[0];
+            double taggedLong = loc[1];
+            if (getDist(taggedLat, taggedLong, latitude, longitude) <= radius && getDist(taggedLat, taggedLong, latitude, longitude) >= 0) {
+                TreeMap<String, String> tree = entry.getValue();
+                for (Map.Entry<String, String> treeEntry : tree.entrySet()) {
+                    String treeData[] = new String[3];
+                    treeData[0] = entry.getKey();
+                    treeData[1] = treeEntry.getKey();
+                    treeData[2] = treeEntry.getValue();
+                    output.add(treeData);
+                }
+            }
+
+        }
+        return output;
+    }
+    //Returns the name of the file to which the local database is saved
     public String getFilename() {
         return filename;
     }
+    //Stores the password using location as a key in the HashMap and name as a key in the TreeMap and
+    //the password as the value associated to the TreeMap key
     public void storePassword(String location, String name, String password) {
         File file = context.getFilesDir();
         //If the file which contains the data exists, read it into
@@ -132,6 +194,8 @@ public class LocalDB {
         } else if(data.isEmpty()) {
             System.out.println("DATA IS EMPTY");
         }
+        //nonGeoTaggedString is the string which will be a key in the hashMap and the TreeMap
+        //stored there will contain all non-geotagged names+passwords
         if(location.equals(nonGeoTaggedString)) {
             System.out.println("location == \"\"");
             if(data.containsKey(nonGeoTaggedString)) {
