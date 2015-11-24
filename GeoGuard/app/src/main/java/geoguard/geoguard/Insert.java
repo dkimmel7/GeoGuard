@@ -84,6 +84,7 @@ public class Insert extends ActionBarActivity implements View.OnClickListener {
             gps.showSettingsAlert();
         }
     }
+
     public void onClick(View view) {
         switch(view.getId()) {
             case R.id.bEnter:
