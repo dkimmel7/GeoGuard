@@ -32,7 +32,8 @@ public class MobilePasswords extends ActionBarActivity {
             LinearLayout ll = (LinearLayout) findViewById(R.id.ll);
             TreeMap<String, String> tree = data.get("");
             int i = 0;
-            for(final Map.Entry<String, String> entry : tree.entrySet()) {
+            if(tree != null)
+                for(final Map.Entry<String, String> entry : tree.entrySet()) {
                 System.out.printf("Key : %s and Value: %s %n", entry.getKey(), entry.getValue());
 
                 Button myButton = new Button(this);

@@ -52,10 +52,12 @@ public class LocalPasswords extends ActionBarActivity {
     private HashMap<String, TreeMap<String,String>> data;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_local_passwords);
         gps = new Tracker(LocalPasswords.this);
         data = createFile(filename);
+        //LocalDB obj_import = new LocalDB(LocalPasswords.this);
         if(data != null) {
             LinearLayout ll = (LinearLayout) findViewById(R.id.ll);
             TreeMap<String, String> tree = data.get("");

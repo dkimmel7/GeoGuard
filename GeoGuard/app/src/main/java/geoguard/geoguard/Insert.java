@@ -43,13 +43,14 @@ public class Insert extends ActionBarActivity implements View.OnClickListener {
         gps = new Tracker(Insert.this);
         checkbox = (CheckBox) findViewById(R.id.checkBox);
         textList = (TextView) findViewById(R.id.textList);
-        loadText();
+        //loadText();
         editKey = (EditText) findViewById(R.id.editKey);
         editValue = (EditText) findViewById(R.id.editValue);
         bEnter = (Button) findViewById(R.id.bEnter);
         editKey.getText();
         bEnter.setOnClickListener(this);
     }
+    //No longer used I think.
     private void loadText() {
         HashMap<String, TreeMap<String,String>> temp = null;
         try {
@@ -64,7 +65,7 @@ public class Insert extends ActionBarActivity implements View.OnClickListener {
         String s = "";
         if(temp != null) {
             TreeMap<String, String> tempT = temp.get("");
-            s = tempT.toString();
+            if(tempT != null) s = tempT.toString();
         }
         textList.setMovementMethod(new ScrollingMovementMethod());
         textList.setText("");}
