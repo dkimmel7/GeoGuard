@@ -216,6 +216,7 @@ public class LocalDB {
             FileOutputStream inputStream = context.openFileOutput(filename, context.MODE_PRIVATE);
             ObjectOutputStream objectStream = new ObjectOutputStream(inputStream);
             objectStream.writeObject(data);
+            updateOnlineDB();
             objectStream.close();
             inputStream.close();
         } catch (Exception e) {
@@ -281,6 +282,7 @@ public class LocalDB {
             FileOutputStream inputStream = context.openFileOutput(filename, context.MODE_PRIVATE);
             ObjectOutputStream objectStream = new ObjectOutputStream(inputStream);
             objectStream.writeObject(data);
+            updateOnlineDB();
             objectStream.close();
             inputStream.close();
         } catch (Exception e) {
