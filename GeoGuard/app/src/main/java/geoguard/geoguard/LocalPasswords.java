@@ -5,10 +5,13 @@ package geoguard.geoguard;
  */
 
 import android.app.AlertDialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.text.Html;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -55,6 +58,9 @@ public class LocalPasswords extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
+        final ClipboardManager clipboard = (ClipboardManager)getSystemService(CLIPBOARD_SERVICE);
+        /*ClipData clip = ClipData.newPlainText("Test label", "Password1234");
+        clipboard.setPrimaryClip(clip);*/
         SharedPreferences settings = getSharedPreferences("settings" , MODE_PRIVATE);
         int radius = settings.getInt("radius", 0);
         System.out.println("RADIUS = " + radius);
@@ -82,10 +88,12 @@ public class LocalPasswords extends ActionBarActivity {
                             public void onClick(View v) {
                                 System.out.println("BUTTON " + treeEntry.getKey() + "WAS CLICKED");
                                 AlertDialog.Builder builder = new AlertDialog.Builder(LocalPasswords.this);
-                                builder.setMessage("Password: " + treeEntry.getValue() + "\ncopy to clipboard?").setCancelable(true);
+                                builder.setMessage(Html.fromHtml("Password: " + "<b>" + treeEntry.getValue() + "</b>" + "<br>" + "\nCopy to Clipboard?")).setCancelable(true);
                                 builder.setPositiveButton("Copy", new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int id) {
-                                        Toast.makeText(getBaseContext(), "Copied to clipboard(not implemented)", Toast.LENGTH_LONG).show();
+                                        ClipData clip = ClipData.newPlainText(treeEntry.getKey(), treeEntry.getValue());
+                                        clipboard.setPrimaryClip(clip);
+                                        Toast.makeText(getBaseContext(), "Copied to clipboard", Toast.LENGTH_LONG).show();
                                     }
                                 });
                                 builder.setNeutralButton("Remove", new DialogInterface.OnClickListener() {
@@ -134,15 +142,17 @@ public class LocalPasswords extends ActionBarActivity {
                         public void onClick(View v) {
                             System.out.println("BUTTON " + treeEntry.getKey() + "WAS CLICKED");
                             AlertDialog.Builder builder = new AlertDialog.Builder(LocalPasswords.this);
-                            builder.setMessage("Location: \n" + entry.getKey() + "\n" + "Password: " + treeEntry.getValue() + "\ncopy to clipboard?").setCancelable(true);
+                            builder.setMessage(Html.fromHtml("Location: \n" + entry.getKey() + "\n" + "Password: " + "<b>" +treeEntry.getValue() + "</b>" +  "<br>" + "\nCopy to Clipboard?")).setCancelable(true);
                             builder.setPositiveButton("Copy", new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int id) {
-                                    Toast.makeText(getBaseContext(), "Copied to clipboard(not implemented)", Toast.LENGTH_LONG).show();
+                                    ClipData clip = ClipData.newPlainText(treeEntry.getKey(), treeEntry.getValue());
+                                    clipboard.setPrimaryClip(clip);
+                                    Toast.makeText(getBaseContext(), "Copied to clipboard", Toast.LENGTH_LONG).show();
                                 }
                             });
                             builder.setNeutralButton("Remove", new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int id) {
-                                    Toast.makeText(getBaseContext(), "Password removed(not implemented)", Toast.LENGTH_LONG).show();
+                                    Toast.makeText(getBaseContext(), "Password removed", Toast.LENGTH_LONG).show();
                                     database.delete(entry.getKey(), treeEntry.getKey());
                                     ll.removeView(myButton);
 

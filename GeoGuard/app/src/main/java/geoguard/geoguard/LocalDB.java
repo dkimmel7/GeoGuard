@@ -50,8 +50,6 @@ public class LocalDB {
         }
     }
 
-<<<<<<< HEAD
-=======
     private void updateOnlineDB(){
         FileInputStream inputStream;
         final byte[] buff;
@@ -84,19 +82,7 @@ public class LocalDB {
             }
         });
     }
-    //Takes location and name to remove and removes the name+password pair from the TreeMap,
-    //if the TreeMap is empty after deletion, delete the location+TreeMap pair from the HashMap
-    public void delete(String location, String name) {
-        if(data == null) {
-            return;
-        }
-        TreeMap<String, String> hashEntry = data.get(location);
-        hashEntry.remove(name);
-        if(hashEntry.isEmpty()) {
-            data.remove(location);
-        }
-    }
->>>>>>> origin/master
+
     //Returns an ArrayList of String arrays, each array contains the location, name, and password
     //at array[0],array[1],and array[2], respectively.
     //To use, call the function and save the result to a string array,
