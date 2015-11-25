@@ -60,12 +60,12 @@ public class LocalPasswords extends ActionBarActivity {
         System.out.println("RADIUS = " + radius);
         setContentView(R.layout.activity_local_passwords);
         gps = new Tracker(LocalPasswords.this);
-        LocalDB database = new LocalDB(LocalPasswords.this);
+        final LocalDB database = new LocalDB(LocalPasswords.this);
         filename = database.getFilename();
         data = createFile(filename);
         if(data != null) {
-            LinearLayout ll = (LinearLayout) findViewById(R.id.ll);
-            LinearLayout ll2 = (LinearLayout) findViewById(R.id.ll2);
+            final LinearLayout ll = (LinearLayout) findViewById(R.id.ll);
+            final LinearLayout ll2 = (LinearLayout) findViewById(R.id.ll2);
             TreeMap<String, String> tree = data.get("");
             int i = 0;
             for(final Map.Entry<String, TreeMap<String,String>> entry : data.entrySet()) {
@@ -73,7 +73,7 @@ public class LocalPasswords extends ActionBarActivity {
                 if (entry.getKey().equals("")) {
                     final TreeMap<String, String> hashEntry = entry.getValue();
                     for (final Map.Entry<String, String> treeEntry : hashEntry.entrySet()) {
-                        Button myButton = new Button(this);
+                        final Button myButton = new Button(this);
                         myButton.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
                                 ViewGroup.LayoutParams.WRAP_CONTENT));
                         myButton.setId(i);
@@ -90,7 +90,9 @@ public class LocalPasswords extends ActionBarActivity {
                                 });
                                 builder.setNeutralButton("Remove", new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int id) {
-                                        Toast.makeText(getBaseContext(), "Password removed(not implemented)", Toast.LENGTH_LONG).show();
+                                        Toast.makeText(getBaseContext(), "Password removed", Toast.LENGTH_LONG).show();
+                                        database.delete(entry.getKey(), treeEntry.getKey());
+                                        ll2.removeView(myButton);
 
                                     }
                                 });
@@ -108,15 +110,22 @@ public class LocalPasswords extends ActionBarActivity {
                         ++i;
                     }
                     continue;
-                } else if (!(showCurrLoc(entry.getKey(), getLocation(), radius))) {
+                } else if(true){
+                    String currLocation = getLocation();
+                    if(currLocation == null) {
+                        Toast.makeText(getApplicationContext(),"Please turn on your GPS", Toast.LENGTH_SHORT).show();
+                        continue;
+                    }
+                    if (!(showCurrLoc(entry.getKey(), getLocation(), radius))) {
                     System.out.println("not showCurrLoc on loc = " + entry.getKey());
                     continue;
+                    }
                 }
                 final TreeMap<String, String> hashEntry = entry.getValue();
                 for (final Map.Entry<String, String> treeEntry : hashEntry.entrySet()) {
                     System.out.println("Location = " + entry.getKey() + " name = " + treeEntry.getKey() + " value = " + treeEntry.getValue());
 
-                    Button myButton = new Button(this);
+                    final Button myButton = new Button(this);
                     myButton.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
                             ViewGroup.LayoutParams.WRAP_CONTENT));
                     myButton.setId(i);
@@ -134,6 +143,8 @@ public class LocalPasswords extends ActionBarActivity {
                             builder.setNeutralButton("Remove", new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int id) {
                                     Toast.makeText(getBaseContext(), "Password removed(not implemented)", Toast.LENGTH_LONG).show();
+                                    database.delete(entry.getKey(), treeEntry.getKey());
+                                    ll.removeView(myButton);
 
                                 }
                             });

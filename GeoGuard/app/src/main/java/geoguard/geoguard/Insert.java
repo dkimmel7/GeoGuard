@@ -30,6 +30,7 @@ public class Insert extends ActionBarActivity implements View.OnClickListener {
     TextView textList;
     CheckBox checkbox;
     Tracker gps;
+    boolean canGetLoc = false;
 
     final private String noLocString = "";
     private String locString = "1289347 123847";
@@ -83,7 +84,7 @@ public class Insert extends ActionBarActivity implements View.OnClickListener {
             double longitude = gps.getLongitude();
             locString = Double.toString(latitude);
             locString += " " + Double.toString(longitude);
-
+            canGetLoc = true;
             if(checkbox.isChecked()) {
                 Toast.makeText(
                         getApplicationContext(),
@@ -92,6 +93,7 @@ public class Insert extends ActionBarActivity implements View.OnClickListener {
             }
         } else {
             // Display alert to turn on GPS
+            canGetLoc = false;
             gps.showSettingsAlert();
         }
     }
@@ -99,9 +101,6 @@ public class Insert extends ActionBarActivity implements View.OnClickListener {
     public void onClick(View view) {
         switch(view.getId()) {
             case R.id.bEnter:
-                //if(editKey.getText().toString().equals("TEST")) {
-                //    printKeysNoLoc();
-                //} else {
                     locationStuff();
                     Toast.makeText(getBaseContext(), "password entered", Toast.LENGTH_SHORT).show();
                     System.out.println("Key = ");
@@ -117,6 +116,9 @@ public class Insert extends ActionBarActivity implements View.OnClickListener {
                     System.out.println(tempo);
                     //textList.setText(tempo);
                     if(checkbox.isChecked()) {
+                        if(canGetLoc == false) {
+                            break;
+                        }
                         storePassword(locString, editKey.getText().toString(), editValue.getText().toString());
                         System.out.print("checkbox is checked \n");
                         System.out.println("locString = " +locString);

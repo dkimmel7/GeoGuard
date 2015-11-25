@@ -41,18 +41,7 @@ public class LocalDB {
             e.printStackTrace();
         }
     }
-    //Takes location and name to remove and removes the name+password pair from the TreeMap,
-    //if the TreeMap is empty after deletion, delete the location+TreeMap pair from the HashMap
-    public void delete(String location, String name) {
-        if(data == null) {
-            return;
-        }
-        TreeMap<String, String> hashEntry = data.get(location);
-        hashEntry.remove(name);
-        if(hashEntry.isEmpty()) {
-            data.remove(location);
-        }
-    }
+
     //Returns an ArrayList of String arrays, each array contains the location, name, and password
     //at array[0],array[1],and array[2], respectively.
     //To use, call the function and save the result to a string array,
@@ -167,6 +156,31 @@ public class LocalDB {
     public String getFilename() {
         return filename;
     }
+
+    //Takes location and name to remove and removes the name+password pair from the TreeMap,
+    //if the TreeMap is empty after deletion, delete the location+TreeMap pair from the HashMap
+    public void delete(String location, String name) {
+        if(data == null) {
+            return;
+        }
+        TreeMap<String, String> hashEntry = data.get(location);
+        hashEntry.remove(name);
+        if(hashEntry.isEmpty()) {
+            data.remove(location);
+        }
+        //Stores data HashMap to file specified by filename
+        try {
+            //Creates a new fileOutputStream and sets append to false which means
+            // it overwrites the file
+            FileOutputStream inputStream = context.openFileOutput(filename, context.MODE_PRIVATE);
+            ObjectOutputStream objectStream = new ObjectOutputStream(inputStream);
+            objectStream.writeObject(data);
+            objectStream.close();
+            inputStream.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
     //Stores the password using location as a key in the HashMap and name as a key in the TreeMap and
     //the password as the value associated to the TreeMap key
     public void storePassword(String location, String name, String password) {
@@ -219,8 +233,8 @@ public class LocalDB {
             data.put(location, pair);
         }
 
+        //Stores data HashMap to file specified by filename
         try {
-            File tempFile = context.getFilesDir();
             //Creates a new fileOutputStream and sets append to false which means
             // it overwrites the file
             FileOutputStream inputStream = context.openFileOutput(filename, context.MODE_PRIVATE);
