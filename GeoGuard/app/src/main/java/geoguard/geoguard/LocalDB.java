@@ -27,6 +27,7 @@ public class LocalDB {
         this.context = context;
         openFile();
     }
+    //Loads the file saved in filename and puts it in data if it can, data will be null otherwise
     private void openFile() {
         HashMap<String,TreeMap<String, String>> data = null;
         try {
@@ -142,8 +143,7 @@ public class LocalDB {
     //the search radius of the location given as latitude and longitude.
     public ArrayList<String[]> nearbyPasswords(double latitude, double longitude) {
         SharedPreferences settings = context.getSharedPreferences("settings" , context.MODE_PRIVATE);
-        int radius = 0;
-        settings.getInt("radius", radius);
+        int radius = settings.getInt("radius", 0);
         ArrayList<String[]> output = new ArrayList<>();
         for (Map.Entry<String, TreeMap<String, String>> entry : data.entrySet()) {
             double loc[] = stringToDoublePair(entry.getKey());
