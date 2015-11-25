@@ -21,12 +21,14 @@ import java.util.TreeMap;
 
 
 public class MobilePasswords extends ActionBarActivity {
-    private String filename = "loc";
+    private String filename = "";
     private HashMap<String, TreeMap<String,String>> data;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mobile_passwords);
+        LocalDB database = new LocalDB(MobilePasswords.this);
+        filename = database.getFilename();
         createFile();
         if(data != null) {
             LinearLayout ll = (LinearLayout) findViewById(R.id.ll);

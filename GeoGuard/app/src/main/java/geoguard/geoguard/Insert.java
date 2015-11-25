@@ -31,8 +31,14 @@ public class Insert extends ActionBarActivity implements View.OnClickListener {
     CheckBox checkbox;
     Tracker gps;
 
-    final String noLocString = "";
-    String locString = "1289347 123847";
+    final private String noLocString = "";
+    private String locString = "1289347 123847";
+    private String filename = "";
+    private FileOutputStream outputStreamLoc;
+    private FileOutputStream outputStreamNoLoc;
+    private ObjectOutputStream objectOutputStreamLoc;
+    private ObjectOutputStream objectOutputStreamNoLoc;
+    private HashMap<String, TreeMap<String,String>> noLocData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +47,8 @@ public class Insert extends ActionBarActivity implements View.OnClickListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_insert);
         gps = new Tracker(Insert.this);
+        LocalDB database = new LocalDB(Insert.this);
+        filename = database.getFilename();
         checkbox = (CheckBox) findViewById(R.id.checkBox);
         textList = (TextView) findViewById(R.id.textList);
         //loadText();
@@ -76,10 +84,12 @@ public class Insert extends ActionBarActivity implements View.OnClickListener {
             locString = Double.toString(latitude);
             locString += " " + Double.toString(longitude);
 
-            Toast.makeText(
-                    getApplicationContext(),
-                    "Your Location is -\nLat: " + latitude + "\nLong: "
-                            + longitude, Toast.LENGTH_SHORT).show();
+            if(checkbox.isChecked()) {
+                Toast.makeText(
+                        getApplicationContext(),
+                        "Your Location is -\nLat: " + latitude + "\nLong: "
+                                + longitude, Toast.LENGTH_SHORT).show();
+            }
         } else {
             // Display alert to turn on GPS
             gps.showSettingsAlert();
@@ -126,41 +136,8 @@ public class Insert extends ActionBarActivity implements View.OnClickListener {
     }
 
 
-    private FileOutputStream outputStreamLoc;
-    private FileOutputStream outputStreamNoLoc;
-    private ObjectOutputStream objectOutputStreamLoc;
-    private ObjectOutputStream objectOutputStreamNoLoc;
-    private String filename = "loc";
-    private HashMap<String, TreeMap<String,String>> noLocData;
-    /*
-    public void initOutputStreams() {
 
-        try {
-            outputStreamLoc = openFileOutput(filename, Context.MODE_PRIVATE);
-            if (outputStreamNoLoc == null) {
-                System.out.println("OUTPUTSTREAMNOLOC EQUALS NULL");
-            }
-            outputStreamNoLoc = openFileOutput(filenameNoLoc,Context.MODE_PRIVATE);
-            objectOutputStreamNoLoc = new ObjectOutputStream(outputStreamNoLoc);
-            objectOutputStreamLoc = new ObjectOutputStream(outputStreamLoc);
-        } catch(Exception e) {
-            e.printStackTrace();
-            // System.err.print(e.getMessage());
-        }
-        return;
-    }*//*
-    public void close() {
-        try {
-            objectOutputStreamNoLoc.close();
-            objectOutputStreamLoc.close();
-            outputStreamLoc.close();
-            outputStreamNoLoc.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.err.println(e.toString());
-        }
 
-    }*/
     //This is the function to add a password which is not geo tagged
     public void storePassword(String location,String key, String value) {
         File file = getFilesDir();

@@ -98,13 +98,13 @@ public class MainScreen extends Activity implements View.OnClickListener {
         btnHomeBase = (Button) findViewById(R.id.btnHomeBase);
         btnSettings = (Button) findViewById(R.id.btnSettings);
         btnLocalPass = (Button) findViewById(R.id.btnLocalPass);
-        btnMobilePass = (Button) findViewById(R.id.btnMobilePass);
+        //btnMobilePass = (Button) findViewById(R.id.btnMobilePass);
         btnInsert = (Button) findViewById(R.id.btnInsert);
         btnLocation = (Button) findViewById(R.id.btnLocation); // @GeoLocation
 
         btnHomeBase.setOnClickListener(this);
         btnLocalPass.setOnClickListener(this);
-        btnMobilePass.setOnClickListener(this);
+        //btnMobilePass.setOnClickListener(this);
         btnSettings.setOnClickListener(this);
         btnInsert.setOnClickListener(this);
         btnLocation.setOnClickListener(this); // @GeoLocation
@@ -153,10 +153,10 @@ public class MainScreen extends Activity implements View.OnClickListener {
                 Intent local = new Intent(this, LocalPasswords.class);
                 startActivity(local);
                 break;
-            case R.id.btnMobilePass:
+            /*case R.id.btnMobilePass:
                 Intent mobile = new Intent(this, MobilePasswords.class);
                 startActivity(mobile);
-                break;
+                break;*/
             case R.id.btnInsert:
                 Intent insert = new Intent(this, Insert.class);
                 startActivity(insert);

@@ -6,6 +6,7 @@ package geoguard.geoguard;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
@@ -46,7 +47,7 @@ import java.util.TreeMap;
 
 
 public class LocalPasswords extends ActionBarActivity {
-    final private String filename = "loc";
+    private String filename = "";
     private Tracker gps;
 
     private HashMap<String, TreeMap<String,String>> data;
@@ -54,19 +55,60 @@ public class LocalPasswords extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
+        SharedPreferences settings = getSharedPreferences("settings" , MODE_PRIVATE);
+        int radius = settings.getInt("radius", 0);
+        System.out.println("RADIUS = " + radius);
         setContentView(R.layout.activity_local_passwords);
         gps = new Tracker(LocalPasswords.this);
+        LocalDB database = new LocalDB(LocalPasswords.this);
+        filename = database.getFilename();
         data = createFile(filename);
-        //LocalDB obj_import = new LocalDB(LocalPasswords.this);
         if(data != null) {
             LinearLayout ll = (LinearLayout) findViewById(R.id.ll);
+            LinearLayout ll2 = (LinearLayout) findViewById(R.id.ll2);
             TreeMap<String, String> tree = data.get("");
             int i = 0;
             for(final Map.Entry<String, TreeMap<String,String>> entry : data.entrySet()) {
+
                 if (entry.getKey().equals("")) {
-                    //System.out.println("Continue");
+                    final TreeMap<String, String> hashEntry = entry.getValue();
+                    for (final Map.Entry<String, String> treeEntry : hashEntry.entrySet()) {
+                        Button myButton = new Button(this);
+                        myButton.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                                ViewGroup.LayoutParams.WRAP_CONTENT));
+                        myButton.setId(i);
+                        myButton.setText(treeEntry.getKey());
+                        myButton.setOnClickListener(new View.OnClickListener() {
+                            public void onClick(View v) {
+                                System.out.println("BUTTON " + treeEntry.getKey() + "WAS CLICKED");
+                                AlertDialog.Builder builder = new AlertDialog.Builder(LocalPasswords.this);
+                                builder.setMessage("Password: " + treeEntry.getValue() + "\ncopy to clipboard?").setCancelable(true);
+                                builder.setPositiveButton("Copy", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        Toast.makeText(getBaseContext(), "Copied to clipboard(not implemented)", Toast.LENGTH_LONG).show();
+                                    }
+                                });
+                                builder.setNeutralButton("Remove", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        Toast.makeText(getBaseContext(), "Password removed(not implemented)", Toast.LENGTH_LONG).show();
+
+                                    }
+                                });
+
+                                builder.setNegativeButton("Close", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        dialog.cancel();
+                                    }
+                                });
+                                AlertDialog dialog = builder.create();
+                                dialog.show();
+                            }
+                        });
+                        ll2.addView(myButton);
+                        ++i;
+                    }
                     continue;
-                } else if (!(showCurrLoc(entry.getKey(), getLocation(), 100))) {
+                } else if (!(showCurrLoc(entry.getKey(), getLocation(), radius))) {
                     System.out.println("not showCurrLoc on loc = " + entry.getKey());
                     continue;
                 }
@@ -120,6 +162,7 @@ public class LocalPasswords extends ActionBarActivity {
 
         double a = Math.pow(Math.sin(dLat / 2),2) + Math.pow(Math.sin(dLon / 2),2) * Math.cos(lat1) * Math.cos(lat2);
         double c = 2 * Math.asin(Math.sqrt(a));
+        System.out.println("DIST = " + (R * c * 1000));
         return R * c * 1000; // returns in meters
     }
     private String getLocation() {
