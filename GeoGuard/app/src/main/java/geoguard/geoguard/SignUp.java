@@ -2,6 +2,7 @@ package geoguard.geoguard;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -147,6 +148,16 @@ public class SignUp extends Activity implements View.OnClickListener{
                             settings.putInt("radius", 10);
                             settings.commit();
                             storePassword();
+
+                            FileOutputStream outputStream;
+                            try{
+                                outputStream = openFileOutput("passwordData", Context.MODE_PRIVATE);
+                                outputStream.write(null);
+                                outputStream.close();
+                            }catch (Exception e){
+                                e.printStackTrace();
+                            }
+
                             Intent intent = new Intent(SignUp.this, MainScreen.class);
                             startActivity(intent);
 
