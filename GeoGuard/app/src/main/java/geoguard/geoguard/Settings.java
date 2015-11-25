@@ -33,6 +33,7 @@ public class Settings extends AppCompatActivity {
     Button btnPasswordChange;
     Button btnRadiusChange;
     Button btnSetHomeBase;
+    Button btnLogout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +43,7 @@ public class Settings extends AppCompatActivity {
         btnPasswordChange = (Button) findViewById(R.id.btnPasswordChange);
         btnRadiusChange = (Button) findViewById(R.id.btnRadius);
         btnSetHomeBase = (Button) findViewById(R.id.btnHomebaseSet);
+        btnLogout = (Button) findViewById(R.id.btnLogout);
 
         btnUsernameChange.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -68,6 +70,15 @@ public class Settings extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 setHomeBase();
+            }
+        });
+
+        btnLogout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), Unlock.class);
+                intent.putExtra("firstTime", false);
+                startActivity(intent);
             }
         });
 

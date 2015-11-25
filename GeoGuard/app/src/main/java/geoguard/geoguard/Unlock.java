@@ -38,8 +38,16 @@ public class Unlock extends Activity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_unlock);
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            boolean firstTime = extras.getBoolean("firstTime", true);
+            if (firstTime) {
+                Parse.initialize(this, "FAnQXaYIH3v9tMOzMG6buNMOnpDPwZZybELUFBmr", "hwOkh0Z11ZNskikNFsERhPDPT1wzdLj1SX9z5wZP");
+            }
+        }else{
+            Parse.initialize(this, "FAnQXaYIH3v9tMOzMG6buNMOnpDPwZZybELUFBmr", "hwOkh0Z11ZNskikNFsERhPDPT1wzdLj1SX9z5wZP");
+        }
 
-        Parse.initialize(this, "FAnQXaYIH3v9tMOzMG6buNMOnpDPwZZybELUFBmr", "hwOkh0Z11ZNskikNFsERhPDPT1wzdLj1SX9z5wZP");
 
         final Button btnEnter = (Button) findViewById(R.id.btnEnter);
         final TextView btnSignup = (TextView) findViewById(R.id.signup);
@@ -103,6 +111,10 @@ public class Unlock extends Activity{
             username.setError("must be:\n at least 3 characters \n less than 31 characters \n alpha numeric ");
             return;
         }
+        if(getSharedPreferences("settings", MODE_PRIVATE).getString("userID", "-1").equals(id)){
+            checkPassword();
+            return;
+        }
         final ProgressDialog progressDialog = new ProgressDialog(this);
         progressDialog.setIndeterminate(true);
         progressDialog.setMessage("Signing in...");
@@ -117,7 +129,9 @@ public class Unlock extends Activity{
                         username.setError(null);
                         Log.d("userID", "Retrieved " + idList.size() + " deviceIDs");
                         if (!getSharedPreferences("settings", MODE_PRIVATE).getString("userID", "-1").equals(id)) {
+                            System.out.println("Updating Profile");
                             updateUserProfile(idList.get(0));
+                            System.out.println("Profile Updated");
                         }
                     } else {
                         username.setError("no user found");
