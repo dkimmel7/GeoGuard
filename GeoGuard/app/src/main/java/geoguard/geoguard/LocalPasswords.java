@@ -62,6 +62,7 @@ public class LocalPasswords extends ActionBarActivity {
         /*ClipData clip = ClipData.newPlainText("Test label", "Password1234");
         clipboard.setPrimaryClip(clip);*/
         SharedPreferences settings = getSharedPreferences("settings" , MODE_PRIVATE);
+
         int radius = settings.getInt("radius", 0);
         System.out.println("RADIUS = " + radius);
         setContentView(R.layout.activity_local_passwords);
@@ -180,7 +181,6 @@ public class LocalPasswords extends ActionBarActivity {
         double dLon = Math.toRadians(lon2 - lon1);
         lat1 = Math.toRadians(lat1);
         lat2 = Math.toRadians(lat2);
-
         double a = Math.pow(Math.sin(dLat / 2),2) + Math.pow(Math.sin(dLon / 2),2) * Math.cos(lat1) * Math.cos(lat2);
         double c = 2 * Math.asin(Math.sqrt(a));
         System.out.println("DIST = " + (R * c * 1000));

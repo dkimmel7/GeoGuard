@@ -276,8 +276,11 @@ public class Settings extends AppCompatActivity {
                                 idList.get(0).put("homeLatitude", latitude);
                                 idList.get(0).put("homeLongitude", longitude);
                                 SharedPreferences.Editor settings = getSharedPreferences("settings", MODE_PRIVATE).edit();
-                                settings.putLong("latitudeAsLong", Double.doubleToRawLongBits(latitude));
-                                settings.putLong("longitudeAsLong",  Double.doubleToRawLongBits(longitude));
+                                //System.out.println("SETTINGS latitude = " + latitude + " longitude = " + longitude);
+                                settings.putString("latitude", Double.toString(latitude));
+                                settings.putString("longitude", Double.toString(longitude));
+                                //settings.putLong("latitudeAsLong", Double.doubleToRawLongBits(latitude));
+                                //settings.putLong("longitudeAsLong",  Double.doubleToRawLongBits(longitude));
                                 settings.commit();
                                 idList.get(0).saveInBackground();
                             } else {
