@@ -39,6 +39,8 @@ public class Unlock extends Activity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_unlock);
 
+        Parse.initialize(this, "FAnQXaYIH3v9tMOzMG6buNMOnpDPwZZybELUFBmr", "hwOkh0Z11ZNskikNFsERhPDPT1wzdLj1SX9z5wZP");
+
         final Button btnEnter = (Button) findViewById(R.id.btnEnter);
         final TextView btnSignup = (TextView) findViewById(R.id.signup);
 
@@ -100,7 +102,6 @@ public class Unlock extends Activity{
         progressDialog.show();
 
         final String id = username.getText().toString();
-        Parse.initialize(this, "FAnQXaYIH3v9tMOzMG6buNMOnpDPwZZybELUFBmr", "hwOkh0Z11ZNskikNFsERhPDPT1wzdLj1SX9z5wZP");
         ParseQuery<ParseObject> query = ParseQuery.getQuery("Users");
         query.whereEqualTo("userID", id);
         query.findInBackground(new FindCallback<ParseObject>() {
