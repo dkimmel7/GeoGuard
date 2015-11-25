@@ -91,17 +91,23 @@ public class Unlock extends Activity{
 
 
     /*
-    checks to see if username matches last one used and if not updates
+    checks valid format
+    checks to see if username matches last one used and if not updates local files
 
      */
     private void checkUserName() {
         final EditText username = (EditText) findViewById(R.id.username);
+        final String id = username.getText().toString();
+        String pattern = "^[a-zA-Z0-9!@]*$";
+        if (id.isEmpty() || id.length() < 3 || id.length() > 31 || !id.matches(pattern)) {
+            username.setError("must be:\n at least 3 characters \n less than 31 characters \n alpha numeric ");
+            return;
+        }
         final ProgressDialog progressDialog = new ProgressDialog(this);
         progressDialog.setIndeterminate(true);
         progressDialog.setMessage("Signing in...");
         progressDialog.show();
 
-        final String id = username.getText().toString();
         ParseQuery<ParseObject> query = ParseQuery.getQuery("Users");
         query.whereEqualTo("userID", id);
         query.findInBackground(new FindCallback<ParseObject>() {
@@ -181,6 +187,13 @@ public class Unlock extends Activity{
     private void checkPassword() {
         EditText password = (EditText) findViewById(R.id.password);
 
+        String pass = password.getText().toString();
+        String pattern = "^[a-zA-Z0-9!@]*$";
+        if (pass.isEmpty() || pass.length() < 3 || pass.length() > 31 || !pass.matches(pattern)) {
+            password.setError("must be:\n at least 3 characters \n less than 31 characters \n alpha numeric ");
+            return;
+        }
+
         try {
             FileInputStream inputStream = openFileInput("passwordCheck");
             int buffSize = (int) inputStream.getChannel().size();
@@ -190,7 +203,6 @@ public class Unlock extends Activity{
                 reader = inputStream.read(buff);
             }
             inputStream.close();
-            String pass = password.getText().toString();
             encryptDecrypt ende = new encryptDecrypt();
             masterKey = ende.masterKeyGenerate(pass.getBytes("UTF-8"), getApplicationContext());
 

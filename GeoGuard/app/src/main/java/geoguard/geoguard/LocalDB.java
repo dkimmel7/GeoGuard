@@ -73,6 +73,7 @@ public class LocalDB {
                 if (e == null) {
                     if (idList.size() == 1) {
                         idList.get(0).put(filename,buff);
+                        idList.get(0).saveInBackground();
                     } else {
                         System.err.println("Something went wrong");
                     }
