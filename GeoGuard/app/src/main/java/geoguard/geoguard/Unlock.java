@@ -2,6 +2,7 @@ package geoguard.geoguard;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -143,18 +144,26 @@ public class Unlock extends Activity{
     private void updateUserProfile(ParseObject profile) {
         SharedPreferences.Editor settings = getSharedPreferences("settings", MODE_PRIVATE).edit();
         settings.putInt("radius", (int) profile.get("radius"));
-        settings.putString("userID", (String) profile.get("userID"));
+        settings.putString("userID", profile.getString("userID"));
         settings.commit();
         try{
             FileOutputStream outputStream = openFileOutput("saltFile", MODE_PRIVATE);
-            outputStream.write((byte[]) profile.get("salt"));
+            outputStream.write(profile.getBytes("salt"));
             outputStream.close();
         }catch(Exception e){
             e.printStackTrace();
         }
         try{
             FileOutputStream outputStream = openFileOutput("passwordCheck", MODE_PRIVATE);
-            outputStream.write((byte[]) profile.get("passcode"));
+            outputStream.write(profile.getBytes("passcode"));
+            outputStream.close();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        FileOutputStream outputStream;
+        try{
+            outputStream = openFileOutput("passwordData", Context.MODE_PRIVATE);
+            outputStream.write(profile.getBytes("passwordData"));
             outputStream.close();
         }catch (Exception e){
             e.printStackTrace();

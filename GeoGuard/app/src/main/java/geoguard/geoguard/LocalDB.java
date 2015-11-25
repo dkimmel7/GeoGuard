@@ -10,9 +10,16 @@ import java.io.ObjectOutputStream;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import android.content.SharedPreferences;
+import android.util.Log;
+
+import com.parse.FindCallback;
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
 
 /**
  * Created by monca on 11/23/2015.
@@ -21,6 +28,7 @@ public class LocalDB {
     private HashMap<String, TreeMap<String,String>> data = null;
     final private String filename = "passwordData";
     final private String nonGeoTaggedString = "";
+    private ParseObject onlineDB = null;
     private Context context = null;
 
     LocalDB(Context context) {
@@ -42,6 +50,53 @@ public class LocalDB {
         }
     }
 
+<<<<<<< HEAD
+=======
+    private void updateOnlineDB(){
+        FileInputStream inputStream;
+        final byte[] buff;
+        try{
+            inputStream = context.openFileInput(filename);
+            int buffSize = (int)inputStream.getChannel().size();
+            buff = new byte[buffSize];
+            int reader = inputStream.read(buff);
+            while(reader != -1){
+                reader = inputStream.read(buff);
+            }
+            inputStream.close();
+        }catch (Exception e){
+            e.printStackTrace();
+            return;
+        }
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("Users");
+        query.whereEqualTo("userID", context.getSharedPreferences("settings", context.MODE_PRIVATE).getString("userID", ""));
+        query.findInBackground(new FindCallback<ParseObject>() {
+            public void done(List<ParseObject> idList, ParseException e) {
+                if (e == null) {
+                    if (idList.size() == 1) {
+                        idList.get(0).put(filename,buff);
+                    } else {
+                        System.err.println("Something went wrong");
+                    }
+                } else {
+                    Log.d("score", "Error: " + e.getMessage());
+                }
+            }
+        });
+    }
+    //Takes location and name to remove and removes the name+password pair from the TreeMap,
+    //if the TreeMap is empty after deletion, delete the location+TreeMap pair from the HashMap
+    public void delete(String location, String name) {
+        if(data == null) {
+            return;
+        }
+        TreeMap<String, String> hashEntry = data.get(location);
+        hashEntry.remove(name);
+        if(hashEntry.isEmpty()) {
+            data.remove(location);
+        }
+    }
+>>>>>>> origin/master
     //Returns an ArrayList of String arrays, each array contains the location, name, and password
     //at array[0],array[1],and array[2], respectively.
     //To use, call the function and save the result to a string array,
