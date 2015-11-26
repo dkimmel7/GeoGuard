@@ -40,6 +40,7 @@ public class Insert extends ActionBarActivity implements View.OnClickListener {
     private ObjectOutputStream objectOutputStreamLoc;
     private ObjectOutputStream objectOutputStreamNoLoc;
     private HashMap<String, TreeMap<String,String>> noLocData;
+    private LocalDB database = new LocalDB(Insert.this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,7 +61,7 @@ public class Insert extends ActionBarActivity implements View.OnClickListener {
         bEnter.setOnClickListener(this);
     }
     //No longer used I think.
-    private void loadText() {
+    /*private void loadText() {
         HashMap<String, TreeMap<String,String>> temp = null;
         try {
             FileInputStream noLoc = openFileInput(filename);
@@ -77,7 +78,7 @@ public class Insert extends ActionBarActivity implements View.OnClickListener {
             if(tempT != null) s = tempT.toString();
         }
         textList.setMovementMethod(new ScrollingMovementMethod());
-        textList.setText("");}
+        textList.setText("");} */
     private void locationStuff() {
         if (gps.canGetLocation()) {
             double latitude = gps.getLatitude();
@@ -104,17 +105,11 @@ public class Insert extends ActionBarActivity implements View.OnClickListener {
                     locationStuff();
                     Toast.makeText(getBaseContext(), "password entered", Toast.LENGTH_SHORT).show();
                     System.out.println("Key = ");
-                    String tempo = textList.getText().toString();
+                    //String tempo = textList.getText().toString();
                     System.out.println(String.valueOf(editKey.getText()));
                     System.out.println("Value = ");
                     System.out.println(String.valueOf(editValue.getText()));
-                    /*textList.append("Key = ");
-                    textList.append(String.valueOf(editKey.getText()));
-                    textList.append(" Value = ");
-                    textList.append(String.valueOf(editValue.getText()));
-                    textList.append("\n");*/
-                    System.out.println(tempo);
-                    //textList.setText(tempo);
+                    //System.out.println(tempo);
                     if(checkbox.isChecked()) {
                         if(canGetLoc == false) {
                             break;
@@ -142,10 +137,10 @@ public class Insert extends ActionBarActivity implements View.OnClickListener {
 
     //This is the function to add a password which is not geo tagged
     public void storePassword(String location,String key, String value) {
-        File file = getFilesDir();
+        database.storePassword(location, key, value);
         //If the file which contains the data exists, read it into
         //noLocData. Else, initialize noLocData to a new HashMap
-
+        /*
             try {
                 FileInputStream noLoc = openFileInput(filename);
                 ObjectInputStream oNoLoc = new ObjectInputStream(noLoc);
@@ -191,7 +186,6 @@ public class Insert extends ActionBarActivity implements View.OnClickListener {
 
         try {
             File tempFile = getFilesDir();
-            //System.out.println(tempFile+" this is tempFile");
             //Creates a new fileOutputStream and sets append to false which means
             // it overwrites the file
             FileOutputStream noLocStream = openFileOutput(filename, MODE_PRIVATE);
@@ -203,7 +197,7 @@ public class Insert extends ActionBarActivity implements View.OnClickListener {
         } catch (Exception e) {
             e.printStackTrace();
             //System.err.println(e.toString());
-        }
+        }*/
     }
     public void printKeysNoLoc() {
         try {
@@ -226,45 +220,12 @@ public class Insert extends ActionBarActivity implements View.OnClickListener {
     //Retrieve the password associated with the given key
     // and returns geotagged password if locTagged is true
     public String retrievePassword(String key, boolean locTagged) {
-        if(noLocData == null) {
-            System.err.println("NOLOCDATA IS NULL IN RETRIEVEPASSWORD");
-            return null;
-        }
-            try {
-                File tempFile = getFilesDir();
-                FileInputStream loc = openFileInput(filename);
-                ObjectInputStream oLoc = new ObjectInputStream(loc);
-                HashMap<String, TreeMap<String, String>> tempMap = (HashMap<String,TreeMap<String, String>>) oLoc.readObject();
-                loc.close();
-                oLoc.close();
-                //return here TODO;
-            } catch (Exception e) {
-                System.err.println(e.toString());
-                e.printStackTrace();
-            }
-
-
-        return null;
+        return database.retrievePassword(key, locTagged);
     }
     //Removes an entry from the specified hashmap
 
     public void removePassword (String location, String key) {
-            try {
-                File tempFile = getFilesDir();
-                FileInputStream loc =  openFileInput(filename);
-                ObjectInputStream oLoc = new ObjectInputStream(loc);
-                HashMap<String, TreeMap<String, String>> tempMap = (HashMap<String, TreeMap<String, String>>) oLoc.readObject();
-                loc.close();
-                oLoc.close();
-                if(location.equals(noLocString)) {
-                    tempMap.get(noLocString).remove(key);
-                } else tempMap.remove(location);
-                objectOutputStreamLoc.writeObject(tempMap);
-
-            } catch (Exception e) {
-                System.err.println(e.toString());
-                e.printStackTrace();
-            }
+        database.delete(location,key);
         }
 
     }

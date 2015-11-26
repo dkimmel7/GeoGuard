@@ -114,6 +114,19 @@ public class LocalDB {
 
         return output;
     }
+    public String retrievePassword(String location, String name) {
+        if(data == null) {
+            System.err.println("DATA IS NULL IN RETRIEVEPASSWORD");
+            return null;
+        }
+        TreeMap<String, String> hashEntry = data.get(location);
+        if(hashEntry == null) {
+            return null;
+        }
+        return hashEntry.get(name);
+
+
+    }
     //Returns the distance between two locations using 2 lat+long pairs using the Haversine formula
     private double getDist(double lat1, double lon1, double lat2, double lon2) {
         //Haversine formula to get distance on a sphere
