@@ -61,7 +61,7 @@ public class NotifyService extends Service {
         notification(); // Commented out to avoid clutter of msgs when testing on master
 
         // Keeps the service running in the background
-        return START_STICKY;
+        return super.onStartCommand(intent, flags, startID); //START_STICKY;
     }
 
 

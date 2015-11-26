@@ -15,7 +15,7 @@ import java.util.Calendar;
  */
 
 public class AlarmReceiver extends BroadcastReceiver {
-    // Restart service in 2 second intervals
+    // Restart service in 4 second intervals
     private static final long REPEAT = 1000 * 4;
 
     /* Called on boot. Sets an alarm that will call a receiver
@@ -30,11 +30,11 @@ public class AlarmReceiver extends BroadcastReceiver {
 
         // Intent for receiver class; starts receiver initiating main service (GPS, notification)
         Intent i = new Intent(context, NotifyReceiver.class);
-        PendingIntent pending = PendingIntent.getBroadcast(context, 0, i, PendingIntent.FLAG_CANCEL_CURRENT);
+        PendingIntent pending = PendingIntent.getBroadcast(context, 0, i, PendingIntent.FLAG_CANCEL_CURRENT); // maybe update current
 
         // Alarm initiates 5 seconds after initial boot
         Calendar cal = Calendar.getInstance();
-       // cal.setTimeInMillis(System.currentTimeMillis()); // added
+        cal.setTimeInMillis(System.currentTimeMillis()); // added
         cal.add(Calendar.SECOND, 5);
 
         // Schedules exact repeat of alarm
