@@ -16,7 +16,7 @@ import java.util.Calendar;
 
 public class AlarmReceiver extends BroadcastReceiver {
     // Restart service in 2 second intervals
-    private static final long REPEAT = 1000 * 2;
+    private static final long REPEAT = 1000 * 4;
 
     /* Called on boot. Sets an alarm that will call a receiver
      * in certain set timed intervals.
@@ -34,10 +34,12 @@ public class AlarmReceiver extends BroadcastReceiver {
 
         // Alarm initiates 5 seconds after initial boot
         Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.SECOND, 1);
+       // cal.setTimeInMillis(System.currentTimeMillis()); // added
+        cal.add(Calendar.SECOND, 5);
 
         // Schedules exact repeat of alarm
-        service.setRepeating(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), REPEAT, pending);
+        service.setRepeating(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), REPEAT, pending); //cal.getTimeInMillis()
+
 
         // Optimizes energy consumption; schedules alarm with inexact trigger req
         // service.setInexactRepeating(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), REPEAT, pending);

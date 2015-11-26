@@ -63,19 +63,6 @@
             android:exported="true" >
         </service>
 
-        <!-- Declaring broadcast receiver for BOOT_COMPLETED event. -->
-        <receiver
-            android:name=".NotifyReceiver"
-            android:enabled="true"
-            android:exported="true">
-
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
-
-        </receiver>
-
         <!-- Schedule alarm to run service periodically -->
         <receiver
             android:name=".AlarmReceiver"
@@ -86,6 +73,19 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+
+        </receiver>
+
+        <!-- Declaring broadcast receiver for BOOT_COMPLETED event. -->
+        <receiver
+            android:name=".NotifyReceiver" >
+        <!--    android:enabled="true"
+            android:exported="true">
+
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter> -->
 
         </receiver>
 
