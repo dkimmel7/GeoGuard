@@ -141,6 +141,7 @@ public class SignUp extends Activity implements View.OnClickListener{
                             userprofile.put("userID", id);
                             userprofile.put("salt", salt);
                             userprofile.put("radius", 10);
+                            userprofile.put("passwordData",("").getBytes());
                             userprofile.saveInBackground();
 
                             SharedPreferences.Editor settings = getSharedPreferences("settings", MODE_PRIVATE).edit();
@@ -150,11 +151,11 @@ public class SignUp extends Activity implements View.OnClickListener{
                             storePassword();
 
                             FileOutputStream outputStream;
-                            try{
+                            try {
                                 outputStream = openFileOutput("passwordData", Context.MODE_PRIVATE);
-                                outputStream.write(null);
+                                outputStream.write("".getBytes("UTF-8"));
                                 outputStream.close();
-                            }catch (Exception e){
+                            } catch (Exception e) {
                                 e.printStackTrace();
                             }
 

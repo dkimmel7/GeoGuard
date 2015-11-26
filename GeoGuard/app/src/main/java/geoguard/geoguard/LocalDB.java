@@ -28,7 +28,6 @@ public class LocalDB {
     private HashMap<String, TreeMap<String,String>> data = null;
     final private String filename = "passwordData";
     final private String nonGeoTaggedString = "";
-    private ParseObject onlineDB = null;
     private Context context = null;
 
     LocalDB(Context context) {

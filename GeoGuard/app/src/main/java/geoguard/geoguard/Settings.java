@@ -275,8 +275,8 @@ public class Settings extends AppCompatActivity {
             public void onClick(View v) {
                 Tracker gps = new Tracker(getApplicationContext());
                 if (gps.canGetLocation()) {
-                    final double latitude = gps.getLatitude();
-                    final double longitude = gps.getLongitude();
+                    final String latitude = Double.toString(gps.getLatitude());
+                    final String longitude = Double.toString(gps.getLongitude());
 
                     ParseQuery<ParseObject> query = ParseQuery.getQuery("Users");
                     query.whereEqualTo("userID", getSharedPreferences("settings", MODE_PRIVATE).getString("userID", ""));
@@ -287,9 +287,8 @@ public class Settings extends AppCompatActivity {
                                 idList.get(0).put("homeLatitude", latitude);
                                 idList.get(0).put("homeLongitude", longitude);
                                 SharedPreferences.Editor settings = getSharedPreferences("settings", MODE_PRIVATE).edit();
-                                //System.out.println("SETTINGS latitude = " + latitude + " longitude = " + longitude);
-                                settings.putString("latitude", Double.toString(latitude));
-                                settings.putString("longitude", Double.toString(longitude));
+                                settings.putString("latitude", latitude);
+                                settings.putString("longitude", longitude);
                                 //settings.putLong("latitudeAsLong", Double.doubleToRawLongBits(latitude));
                                 //settings.putLong("longitudeAsLong",  Double.doubleToRawLongBits(longitude));
                                 settings.commit();

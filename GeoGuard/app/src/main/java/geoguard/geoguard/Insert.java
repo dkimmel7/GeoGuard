@@ -44,7 +44,7 @@ public class Insert extends ActionBarActivity implements View.OnClickListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-       // initOutputStreams();
+        // initOutputStreams();
         Context context = this;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_insert);
@@ -102,32 +102,32 @@ public class Insert extends ActionBarActivity implements View.OnClickListener {
     public void onClick(View view) {
         switch(view.getId()) {
             case R.id.bEnter:
-                    locationStuff();
-                    Toast.makeText(getBaseContext(), "password entered", Toast.LENGTH_SHORT).show();
-                    System.out.println("Key = ");
-                    //String tempo = textList.getText().toString();
-                    System.out.println(String.valueOf(editKey.getText()));
-                    System.out.println("Value = ");
-                    System.out.println(String.valueOf(editValue.getText()));
-                    //System.out.println(tempo);
-                    if(checkbox.isChecked()) {
-                        if(canGetLoc == false) {
-                            break;
-                        }
-                        storePassword(locString, editKey.getText().toString(), editValue.getText().toString());
-                        System.out.print("checkbox is checked \n");
-                        System.out.println("locString = " +locString);
-                    } else {
-                        storePassword(noLocString, editKey.getText().toString(), editValue.getText().toString());
-                        System.out.print("checkbox is NOT checked \n");
-                        System.out.println("noLocString = " + noLocString);
-
+                locationStuff();
+                Toast.makeText(getBaseContext(), "password entered", Toast.LENGTH_SHORT).show();
+                System.out.println("Key = ");
+                //String tempo = textList.getText().toString();
+                System.out.println(String.valueOf(editKey.getText()));
+                System.out.println("Value = ");
+                System.out.println(String.valueOf(editValue.getText()));
+                //System.out.println(tempo);
+                if(checkbox.isChecked()) {
+                    if(canGetLoc == false) {
+                        break;
                     }
+                    storePassword(locString, editKey.getText().toString(), editValue.getText().toString());
+                    System.out.print("checkbox is checked \n");
+                    System.out.println("locString = " +locString);
+                } else {
+                    storePassword(noLocString, editKey.getText().toString(), editValue.getText().toString());
+                    System.out.print("checkbox is NOT checked \n");
+                    System.out.println("noLocString = " + noLocString);
 
-                    //editKey and editValue are cleared after button click
-                    editKey.setText("");
-                    editValue.setText("");
-               // }
+                }
+
+                //editKey and editValue are cleared after button click
+                editKey.setText("");
+                editValue.setText("");
+                // }
                 break;
         }
     }
@@ -183,7 +183,6 @@ public class Insert extends ActionBarActivity implements View.OnClickListener {
             pair.put(key, value);
             noLocData.put(location, pair);
         }
-
         try {
             File tempFile = getFilesDir();
             //Creates a new fileOutputStream and sets append to false which means
@@ -208,7 +207,7 @@ public class Insert extends ActionBarActivity implements View.OnClickListener {
                 HashMap<String, TreeMap<String, String>> tempMap = (HashMap<String, TreeMap<String, String>>) oNoLoc.readObject();
                 noLoc.close();
                 oNoLoc.close();
-                    System.out.println(tempMap.toString());
+                System.out.println(tempMap.toString());
             }catch(Exception e) {
                 e.printStackTrace();
             }
@@ -219,16 +218,13 @@ public class Insert extends ActionBarActivity implements View.OnClickListener {
     }
     //Retrieve the password associated with the given key
     // and returns geotagged password if locTagged is true
-    public String retrievePassword(String key, boolean locTagged) {
-        return database.retrievePassword(key, locTagged);
+    public String retrievePassword(String location, String name) {
+        return database.retrievePassword(location, name);
     }
     //Removes an entry from the specified hashmap
 
     public void removePassword (String location, String key) {
         database.delete(location,key);
-        }
-
     }
 
-
-
+}

@@ -67,7 +67,7 @@ public class LocalPasswords extends ActionBarActivity {
         System.out.println("RADIUS = " + radius);
         setContentView(R.layout.activity_local_passwords);
         gps = new Tracker(LocalPasswords.this);
-        final LocalDB database = new LocalDB(LocalPasswords.this);
+        final LocalDB database = new LocalDB(getApplicationContext());
         filename = database.getFilename();
         data = createFile(filename);
         if(data != null) {

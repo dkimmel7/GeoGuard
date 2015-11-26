@@ -166,6 +166,10 @@ public class Unlock extends Activity{
         SharedPreferences.Editor settings = getSharedPreferences("settings", MODE_PRIVATE).edit();
         settings.putInt("radius", (int) profile.get("radius"));
         settings.putString("userID", profile.getString("userID"));
+        if(profile.containsKey("latitude")){
+            settings.putString("latitude", profile.getString("latitude"));
+            settings.putString("longitude", profile.getString("longitude"));
+        }
         settings.commit();
         try{
             FileOutputStream outputStream = openFileOutput("saltFile", MODE_PRIVATE);
@@ -181,15 +185,26 @@ public class Unlock extends Activity{
         }catch (Exception e){
             e.printStackTrace();
         }
-        FileOutputStream outputStream;
-        try{
-            outputStream = openFileOutput("passwordData", Context.MODE_PRIVATE);
-            outputStream.write(profile.getBytes("passwordData"));
-            outputStream.close();
-        }catch (Exception e){
-            e.printStackTrace();
+        if(profile.containsKey("passwordData")) {
+            FileOutputStream outputStream;
+            try {
+                outputStream = openFileOutput("passwordData", Context.MODE_PRIVATE);
+                outputStream.write(profile.getBytes("passwordData"));
+                outputStream.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }else {
+            FileOutputStream outputStream;
+            try {
+                outputStream = openFileOutput("passwordData", Context.MODE_PRIVATE);
+                outputStream.write("".getBytes("UTF-8"));
+                outputStream.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
-        //todo fetch files
+
     }
 
     /*
