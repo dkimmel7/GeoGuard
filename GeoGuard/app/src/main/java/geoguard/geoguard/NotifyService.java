@@ -19,6 +19,9 @@ public class NotifyService extends Service {
     NotificationCompat.Builder notification;
     private static final int uniqueID = 123456;
 
+    // GPS
+    Tracker gps;
+
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -57,6 +60,7 @@ public class NotifyService extends Service {
         Toast.makeText(getApplicationContext(), "Service Working", Toast.LENGTH_LONG).show();
         Log.d("Service", "Working");
 
+        // if radius is true, issue notification
         // Issue Notification
         notification(); // Commented out to avoid clutter of msgs when testing on master
 
@@ -65,14 +69,47 @@ public class NotifyService extends Service {
     }
 
 
-    /* Creates notification with certain attributes */
+    /* Check current coordinates to tagged GeoLocation */
+    public void gpsCheck() {
+        gps = new Tracker(NotifyService.this);
+
+        if (gps.canGetLocation()) {
+            double latitude = gps.getLatitude();
+            double longitude = gps.getLongitude();
+
+
+            Toast.makeText(
+                    getApplicationContext(),
+                    "Your Location is -\nLat: " + latitude + "\nLong: "
+                            + longitude + "\nradius" + gps.radius(36.975952,
+                            -122.05534399999999), Toast.LENGTH_LONG).show();
+        } else {
+            // Display alert to turn on GPS // Put this on main screen and login screen
+            gps.showSettingsAlert();
+        }
+
+        return; }
+
+
+    /* Creates/Updates notification with certain attributes */
     public void notification() {
+
+        int numNotify = 0; // Numbeer passwords found in the area
+        boolean shouldUpdate = false; // Update Notification count if new one found in area
+        boolean cancelNotification = false; // Cancel notification if area has been left
+        int metersSet = 50;
+
+        // update notification if it it from 2 to 1
+        // cancel notification if it is 1
+
+        // number of notification changes constantly
+
         // Build the notification
         notification.setSmallIcon(R.drawable.notification_template_icon_bg);
-        notification.setTicker("This is a ticker");
+        notification.setTicker("Ticker");
         notification.setWhen(System.currentTimeMillis());
-        notification.setContentTitle("This is the title.");
-        notification.setContentText("Body text of notification");
+        notification.setContentTitle("GeoGuard Password Found at Location");
+        notification.setContentText("You have" + numNotify + "Password Found Within" + metersSet + "Meters of your Location");
 
         Intent intent = new Intent(this, Location.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this , 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
