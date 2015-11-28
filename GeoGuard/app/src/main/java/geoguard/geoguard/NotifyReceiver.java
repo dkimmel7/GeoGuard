@@ -15,8 +15,10 @@ public class NotifyReceiver extends BroadcastReceiver {
 
         // Start service on boot up
         Intent service = new Intent(context, NotifyService.class);
-        context.startService(service);
 
         Log.d("Service", "Notification Service Started");
+
+        context.startService(service);
+
     }
 }
