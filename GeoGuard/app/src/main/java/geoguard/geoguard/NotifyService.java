@@ -64,15 +64,14 @@ public class NotifyService extends Service {
         Toast.makeText(getApplicationContext(), "Service Working", Toast.LENGTH_LONG).show();
         Log.d("Service", "Working");
 
-        // if radius is true, issue notification
-        gpsCheck(); // alert flag
+        // Check if user is within radius of tagged location
+        gpsCheck();
 
-        boolean WITHIN_RANGE = false;
-
-        // Issue Notification
+        // Issue Notification if new password found or if left area
         if (WITHIN_RANGE == true) {
             notification(); // Commented out to avoid clutter of msgs when testing on master
         }
+
         // Keeps the service running in the background
         return super.onStartCommand(intent, flags, startID); //START_STICKY;
     }
@@ -82,59 +81,64 @@ public class NotifyService extends Service {
     public void gpsCheck() {
         gps = new Tracker(NotifyService.this);
 
+        // Recounts passwords found within range of location tagged
         int recount = 0;
 
         if (gps.canGetLocation()) {
             double latitude = gps.getLatitude();
             double longitude = gps.getLongitude();
 
-            // DB_LAT and DB_LAT will be all tagged location in DB
-            // This will end up being a for-loop
+            WITHIN_RANGE = false; // Redundant, but used again in case
+
+            // ** DB_LAT and DB_LAT - ALL TAGGED LOCATIONS
+            // ** WILL END UP AS FOR-LOOP **
+            // Check if current location is within password tagged location
             if (gps.radius(DB_LAT, DB_LONG) <= METERS_SET) { // Will need to do this for multiple tagged coordinates in db
                 recount++;
             }
             // Check if the number of passwords found in current location changed
             if (recount == NOTIFY_COUNT) {
+                // No new location found, no need to update notification
                 WITHIN_RANGE = false;
             } else {
-                // Updates count, notification
+                // New password found, or user left area so password count decreases
                 NOTIFY_COUNT = recount;
                 WITHIN_RANGE = true;
             }
-
         } else {
             // Display alert to turn on GPS // Put this on main screen and login screen
             gps.showSettingsAlert();
         }
-
     }
 
 
     /* Creates/Updates notification with certain attributes */
     public void notification() {
 
-        boolean shouldUpdate = false; // Update Notification count if new one found in area
         boolean cancelNotification = false; // Cancel notification if area has been left
 
-        // update notification if it it from 2 to 1
-        // cancel notification if it is 1
+        if(NOTIFY_COUNT > 0) {
+            // Build the notification
+            notification.setSmallIcon(R.drawable.notification_template_icon_bg);
+            notification.setTicker("Ticker");
+            notification.setWhen(System.currentTimeMillis());
+            notification.setContentTitle("GeoGuard Password Found at Location");
+            notification.setContentText("You have" + NOTIFY_COUNT + "Password Found Within" + METERS_SET + "Meters of your Location");
 
-        // number of notification changes constantly
+            Intent intent = new Intent(this, Location.class);
+            PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+            notification.setContentIntent(pendingIntent);
 
-        // Build the notification
-        notification.setSmallIcon(R.drawable.notification_template_icon_bg);
-        notification.setTicker("Ticker");
-        notification.setWhen(System.currentTimeMillis());
-        notification.setContentTitle("GeoGuard Password Found at Location");
-        notification.setContentText("You have" + NOTIFY_COUNT + "Password Found Within" + METERS_SET + "Meters of your Location");
+            // Builds notification and issues it
+            NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+            nm.notify(uniqueID, notification.build());
+        } else {
+            // Cancel notification if notification unclicked and radius is left
+            // NOTIFY_COUNT should be 0
+            NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+            nm.cancel(uniqueID);
 
-        Intent intent = new Intent(this, Location.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this , 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        notification.setContentIntent(pendingIntent);
-
-        // Builds notification and issues it
-        NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        nm.notify(uniqueID, notification.build());
+        }
     }
 
 }
