@@ -236,6 +236,13 @@ public class LocalDB {
             e.printStackTrace();
         }
     }
+    //returns a string in the form "latitude longitude" which has the latitude and longitude of the
+    //home base for the signed in profile
+    public String getHomeBaseCoords() {
+        TreeMap<String, String> treeEntry = data.get("Home Base");
+        String homeBaseCoords = treeEntry.get("Home Base");
+        return homeBaseCoords;
+    }
     //Stores the password using location as a key in the HashMap and name as a key in the TreeMap and
     //the password as the value associated to the TreeMap key
     public void storePassword(String location, String name, String password) {
