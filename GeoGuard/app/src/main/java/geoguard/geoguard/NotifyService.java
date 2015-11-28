@@ -32,7 +32,7 @@ public class NotifyService extends Service {
     private boolean WITHIN_RANGE = false;
 
     // Database
-    LocalDB db = new LocalDB(getApplicationContext());
+    LocalDB db = new LocalDB(NotifyService.this);
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -70,12 +70,15 @@ public class NotifyService extends Service {
         // Debugging
         Toast.makeText(getApplicationContext(), "Service Working", Toast.LENGTH_LONG).show();
         Log.d("Service", "Working");
+
         // Check if user is within radius of tagged location
         gpsCheck();
+
         // Issue Notification if new password found or if left area
         if (WITHIN_RANGE) {
             notification(); // Commented out to avoid clutter of msgs when testing on master
         }
+
         // Keeps the service running in the background
         return super.onStartCommand(intent, flags, startID); //START_STICKY;
     }
@@ -106,6 +109,9 @@ public class NotifyService extends Service {
                 double loc[] = stringToDoublePair(entry[0]);
                 DB_LATITUDE = loc[0];
                 DB_LONGITUDE = loc[1];
+
+                Log.d("Entry Check:", entry[0]);
+
                 // Check if current location is within radius of tagged location
                 if (gps.radius(DB_LATITUDE, DB_LONGITUDE) <= METERS_SET) {
                     recount++; // Increment count for password found
