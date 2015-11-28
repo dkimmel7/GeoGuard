@@ -30,8 +30,6 @@ public class NotifyService extends Service {
     private static final int METERS_SET = 50;
     private int NOTIFY_COUNT = 0;
     private boolean WITHIN_RANGE = false;
-    private double DB_LONG = 36.975952;
-    private double DB_LAT = -122.05534399999999;
 
     // Database
     LocalDB db = new LocalDB(getApplicationContext());
@@ -72,15 +70,12 @@ public class NotifyService extends Service {
         // Debugging
         Toast.makeText(getApplicationContext(), "Service Working", Toast.LENGTH_LONG).show();
         Log.d("Service", "Working");
-
         // Check if user is within radius of tagged location
         gpsCheck();
-
         // Issue Notification if new password found or if left area
-        if (WITHIN_RANGE == true) {
+        if (WITHIN_RANGE) {
             notification(); // Commented out to avoid clutter of msgs when testing on master
         }
-
         // Keeps the service running in the background
         return super.onStartCommand(intent, flags, startID); //START_STICKY;
     }
@@ -88,75 +83,57 @@ public class NotifyService extends Service {
 
     /* Check current coordinates to tagged GeoLocation */
     public void gpsCheck() {
-        gps = new Tracker(NotifyService.this);// could go on top of all
+        gps = new Tracker(NotifyService.this);
+
+        // Passwords within range unknown from start of iteration
+        WITHIN_RANGE = false;
+        double DB_LONGITUDE;
+        double DB_LATITUDE;
 
         // Recounts passwords found within range of location tagged
         int recount = 0;
+        // For all locations tagged in database, entry[0] is location
+        ArrayList<String[]> entries = new ArrayList<>();
+        entries = db.getAllPasswords();
 
+        // Get current locations
         if (gps.canGetLocation()) {
             double latitude = gps.getLatitude();
             double longitude = gps.getLongitude();
 
-            WITHIN_RANGE = false; // Redundant, but used again in case
-
-            ArrayList<String[]> entries = new ArrayList<>();
-            entries = db.getAllPasswords(); // entry[0] is location
+            // Query all locations in database
             for(String[] entry : entries) {
                 double loc[] = stringToDoublePair(entry[0]);
-                DB_LAT = loc[0];;
-                DB_LONG = loc[1];
+                DB_LATITUDE = loc[0];
+                DB_LONGITUDE = loc[1];
+                // Check if current location is within radius of tagged location
+                if (gps.radius(DB_LATITUDE, DB_LONGITUDE) <= METERS_SET) {
+                    recount++; // Increment count for password found
+                }
             }
 
-                // ** DB_LAT and DB_LAT - ALL TAGGED LOCATIONS
-                // ** WILL END UP AS FOR-LOOP **
-                // Check if current location is within password tagged location
-            if (gps.radius(DB_LAT, DB_LONG) <= METERS_SET) { // Will need to do this for multiple tagged coordinates in db
-                recount++;
-            }
             // Check if the number of passwords found in current location changed
+            // No new location found, no need to update notification
             if (recount == NOTIFY_COUNT) {
-                // No new location found, no need to update notification
-                WITHIN_RANGE = false;
+                WITHIN_RANGE = false;   // Flag false evades notification issuing
+
+                // New password found - increasing NOTIFY_COUNT
+                // Or User left area -  decreasing NOTIFY_COUNT
             } else {
-                // New password found, or user left area so password count decreases
                 NOTIFY_COUNT = recount;
-                WITHIN_RANGE = true;
+                WITHIN_RANGE = true;    // Flag true initiates notification issue/mod
             }
-        } else {
+
             // Display alert to turn on GPS // Put this on main screen and login screen
+        } else {
             gps.showSettingsAlert();
         }
     }
 
-
-    //Returns an ArrayList of String arrays with all the locations, names, and passwords within
-    //the search radius of the location given as latitude and longitude.
-    public ArrayList<String[]> nearbyPasswords(double latitude, double longitude) {
-        SharedPreferences settings = context.getSharedPreferences("settings" , context.MODE_PRIVATE);
-        int radius = settings.getInt("radius", 0);
-        ArrayList<String[]> output = new ArrayList<>();
-        for (Map.Entry<String, TreeMap<String, String>> entry : data.entrySet()) {
-            double loc[] = stringToDoublePair(entry.getKey());
-            double taggedLat = loc[0];
-            double taggedLong = loc[1];
-            if (getDist(taggedLat, taggedLong, latitude, longitude) <= radius && getDist(taggedLat, taggedLong, latitude, longitude) >= 0) {
-                TreeMap<String, String> tree = entry.getValue();
-                for (Map.Entry<String, String> treeEntry : tree.entrySet()) {
-                    String treeData[] = new String[3];
-                    treeData[0] = entry.getKey();
-                    treeData[1] = treeEntry.getKey();
-                    treeData[2] = treeEntry.getValue();
-                    output.add(treeData);
-                }
-            }
-
-        }
-        return output;
-    }
-
-    //Extracts the latitude and longitude of the input string which should be of the form "lat long"
-    //Saves the two doubles in a double array with two elements and returns it, returns null if
-    //parseDouble fails
+    /* Extracts the latitude and longitude of the input string which should be of the form "lat long"
+     * Saves the two doubles in a double array with two elements and returns it, returns null if
+     * parseDouble fails
+     */
     private double[] stringToDoublePair(String input) {
         double[] output = null;
         try {
