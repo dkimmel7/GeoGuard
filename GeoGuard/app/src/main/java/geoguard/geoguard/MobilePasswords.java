@@ -30,48 +30,6 @@ public class MobilePasswords extends ActionBarActivity {
         LocalDB database = new LocalDB(MobilePasswords.this);
         filename = database.getFilename();
         createFile();
-        if(data != null) {
-            LinearLayout ll = (LinearLayout) findViewById(R.id.ll);
-            TreeMap<String, String> tree = data.get("");
-            int i = 0;
-            if(tree != null)
-                for(final Map.Entry<String, String> entry : tree.entrySet()) {
-                System.out.printf("Key : %s and Value: %s %n", entry.getKey(), entry.getValue());
-
-                Button myButton = new Button(this);
-                myButton.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT,
-                        LayoutParams.WRAP_CONTENT));
-                myButton.setId(i);
-                myButton.setText(entry.getKey());
-                myButton.setOnClickListener(new View.OnClickListener() {
-                    public void onClick(View v) {
-                        System.out.println("BUTTON " + entry.getKey() + "WAS CLICKED");
-                        AlertDialog.Builder builder = new AlertDialog.Builder(MobilePasswords.this);
-                        builder.setMessage("Password: " + entry.getValue() + "\ncopy to clipboard?").setCancelable(true);
-                        builder.setPositiveButton("Copy", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                Toast.makeText(getBaseContext(), "Copied to clipboard(not implemented)", Toast.LENGTH_LONG).show();
-                            }
-                        });
-                        builder.setNeutralButton("Remove", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                Toast.makeText(getBaseContext(), "Password removed(not implemented)", Toast.LENGTH_LONG).show();
-
-                            }
-                        });
-                        builder.setNegativeButton("Close", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                dialog.cancel();
-                            }
-                        });
-                        AlertDialog dialog = builder.create();
-                        dialog.show();
-                    }
-                });
-                ll.addView(myButton);
-                ++i;
-            }
-        } else System.out.println("data is null");
     }
     private void createFile() {
         data = null;
