@@ -3,6 +3,7 @@ package geoguard.geoguard;
 import android.content.Context;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.text.method.ScrollingMovementMethod;
 import android.view.View;
 import android.widget.Button;
@@ -24,7 +25,7 @@ import java.util.TreeMap;
 //noLocString could be changed so that the non-geotagged passwords can be grouped together
 
 
-public class Insert extends ActionBarActivity implements View.OnClickListener {
+public class Insert extends AppCompatActivity implements View.OnClickListener {
     Button bEnter;
     EditText editKey, editValue;
     TextView textList;

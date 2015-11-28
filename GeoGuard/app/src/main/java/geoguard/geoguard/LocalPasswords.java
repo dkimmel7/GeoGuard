@@ -11,6 +11,7 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -49,7 +50,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 
-public class LocalPasswords extends ActionBarActivity {
+public class LocalPasswords extends AppCompatActivity {
     private String filename = "";
     private Tracker gps;
 

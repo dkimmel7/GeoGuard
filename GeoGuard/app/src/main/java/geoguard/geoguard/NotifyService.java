@@ -3,12 +3,18 @@ package geoguard.geoguard;
 import android.app.NotificationManager;             // for notification
 import android.app.PendingIntent;                   // for notification
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v4.app.NotificationCompat;   // for notification
 
 import android.app.Service;
 import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Created by dnalex on 11/16/2015.
@@ -26,6 +32,9 @@ public class NotifyService extends Service {
     private boolean WITHIN_RANGE = false;
     private double DB_LONG = 36.975952;
     private double DB_LAT = -122.05534399999999;
+
+    // Database
+    LocalDB db = new LocalDB(getApplicationContext());
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -79,7 +88,7 @@ public class NotifyService extends Service {
 
     /* Check current coordinates to tagged GeoLocation */
     public void gpsCheck() {
-        gps = new Tracker(NotifyService.this);
+        gps = new Tracker(NotifyService.this);// could go on top of all
 
         // Recounts passwords found within range of location tagged
         int recount = 0;
@@ -90,9 +99,17 @@ public class NotifyService extends Service {
 
             WITHIN_RANGE = false; // Redundant, but used again in case
 
-            // ** DB_LAT and DB_LAT - ALL TAGGED LOCATIONS
-            // ** WILL END UP AS FOR-LOOP **
-            // Check if current location is within password tagged location
+            ArrayList<String[]> entries = new ArrayList<>();
+            entries = db.getAllPasswords(); // entry[0] is location
+            for(String[] entry : entries) {
+                double loc[] = stringToDoublePair(entry[0]);
+                DB_LAT = loc[0];;
+                DB_LONG = loc[1];
+            }
+
+                // ** DB_LAT and DB_LAT - ALL TAGGED LOCATIONS
+                // ** WILL END UP AS FOR-LOOP **
+                // Check if current location is within password tagged location
             if (gps.radius(DB_LAT, DB_LONG) <= METERS_SET) { // Will need to do this for multiple tagged coordinates in db
                 recount++;
             }
@@ -111,6 +128,46 @@ public class NotifyService extends Service {
         }
     }
 
+
+    //Returns an ArrayList of String arrays with all the locations, names, and passwords within
+    //the search radius of the location given as latitude and longitude.
+    public ArrayList<String[]> nearbyPasswords(double latitude, double longitude) {
+        SharedPreferences settings = context.getSharedPreferences("settings" , context.MODE_PRIVATE);
+        int radius = settings.getInt("radius", 0);
+        ArrayList<String[]> output = new ArrayList<>();
+        for (Map.Entry<String, TreeMap<String, String>> entry : data.entrySet()) {
+            double loc[] = stringToDoublePair(entry.getKey());
+            double taggedLat = loc[0];
+            double taggedLong = loc[1];
+            if (getDist(taggedLat, taggedLong, latitude, longitude) <= radius && getDist(taggedLat, taggedLong, latitude, longitude) >= 0) {
+                TreeMap<String, String> tree = entry.getValue();
+                for (Map.Entry<String, String> treeEntry : tree.entrySet()) {
+                    String treeData[] = new String[3];
+                    treeData[0] = entry.getKey();
+                    treeData[1] = treeEntry.getKey();
+                    treeData[2] = treeEntry.getValue();
+                    output.add(treeData);
+                }
+            }
+
+        }
+        return output;
+    }
+
+    //Extracts the latitude and longitude of the input string which should be of the form "lat long"
+    //Saves the two doubles in a double array with two elements and returns it, returns null if
+    //parseDouble fails
+    private double[] stringToDoublePair(String input) {
+        double[] output = null;
+        try {
+            output = new double[2];
+            output[0] = Double.parseDouble(input.substring(0, input.indexOf(" ")));
+            output[1] = Double.parseDouble(input.substring(input.indexOf(" ")));
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        return output;
+    }
 
     /* Creates/Updates notification with certain attributes */
     public void notification() {
