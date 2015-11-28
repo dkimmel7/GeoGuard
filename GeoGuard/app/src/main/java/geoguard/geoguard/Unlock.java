@@ -2,6 +2,7 @@ package geoguard.geoguard;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -30,18 +31,26 @@ import java.util.List;
 
 public class Unlock extends Activity{
 
-    Button btnEnter;
 
-    TextView btnSignup;
     byte[] masterKey;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_unlock);
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            boolean firstTime = extras.getBoolean("firstTime", true);
+            if (firstTime) {
+                Parse.initialize(this, "FAnQXaYIH3v9tMOzMG6buNMOnpDPwZZybELUFBmr", "hwOkh0Z11ZNskikNFsERhPDPT1wzdLj1SX9z5wZP");
+            }
+        }else{
+            Parse.initialize(this, "FAnQXaYIH3v9tMOzMG6buNMOnpDPwZZybELUFBmr", "hwOkh0Z11ZNskikNFsERhPDPT1wzdLj1SX9z5wZP");
+        }
 
-        btnEnter = (Button) findViewById(R.id.btnEnter);
-        btnSignup = (TextView) findViewById(R.id.signup);
+
+        final Button btnEnter = (Button) findViewById(R.id.btnEnter);
+        final TextView btnSignup = (TextView) findViewById(R.id.signup);
 
         btnEnter.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -54,7 +63,6 @@ public class Unlock extends Activity{
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(), SignUp.class);
-                intent.putExtra("unlockContext", "test");
                 startActivity(intent);
             }
         });
@@ -91,18 +99,27 @@ public class Unlock extends Activity{
 
 
     /*
-    checks to see if username matches last one used and if not updates
+    checks valid format
+    checks to see if username matches last one used and if not updates local files
 
      */
     private void checkUserName() {
         final EditText username = (EditText) findViewById(R.id.username);
+        final String id = username.getText().toString();
+        String pattern = "^[a-zA-Z0-9!@]*$";
+        if (id.isEmpty() || id.length() < 3 || id.length() > 31 || !id.matches(pattern)) {
+            username.setError("must be:\n at least 3 characters \n less than 31 characters \n alpha numeric ");
+            return;
+        }
+        if(getSharedPreferences("settings", MODE_PRIVATE).getString("userID", "-1").equals(id)){
+            checkPassword();
+            return;
+        }
         final ProgressDialog progressDialog = new ProgressDialog(this);
         progressDialog.setIndeterminate(true);
         progressDialog.setMessage("Signing in...");
         progressDialog.show();
 
-        final String id = username.getText().toString();
-        Parse.initialize(this, "FAnQXaYIH3v9tMOzMG6buNMOnpDPwZZybELUFBmr", "hwOkh0Z11ZNskikNFsERhPDPT1wzdLj1SX9z5wZP");
         ParseQuery<ParseObject> query = ParseQuery.getQuery("Users");
         query.whereEqualTo("userID", id);
         query.findInBackground(new FindCallback<ParseObject>() {
@@ -112,7 +129,9 @@ public class Unlock extends Activity{
                         username.setError(null);
                         Log.d("userID", "Retrieved " + idList.size() + " deviceIDs");
                         if (!getSharedPreferences("settings", MODE_PRIVATE).getString("userID", "-1").equals(id)) {
+                            System.out.println("Updating Profile");
                             updateUserProfile(idList.get(0));
+                            System.out.println("Profile Updated");
                         }
                     } else {
                         username.setError("no user found");
@@ -122,17 +141,22 @@ public class Unlock extends Activity{
                 }
             }
         });
-
         new android.os.Handler().postDelayed(
                 new Runnable() {
                     public void run() {
-                        // On complete call either onSignupSuccess or onSignupFailed
+                        // On complete call either onSignupSuccess
                         // depending on success
+                        if (username.getError() != null) {
+                            progressDialog.dismiss();
+                            return;
+                        }
                         checkPassword();
                         progressDialog.dismiss();
                     }
-                }, 1000);
+                }, 3000);
     }
+
+
 
     /*
       precondition: profile already has been created with the required fields
@@ -141,23 +165,46 @@ public class Unlock extends Activity{
     private void updateUserProfile(ParseObject profile) {
         SharedPreferences.Editor settings = getSharedPreferences("settings", MODE_PRIVATE).edit();
         settings.putInt("radius", (int) profile.get("radius"));
-        settings.putString("userID", (String) profile.get("userID"));
+        settings.putString("userID", profile.getString("userID"));
+        if(profile.containsKey("latitude")){
+            settings.putString("latitude", profile.getString("latitude"));
+            settings.putString("longitude", profile.getString("longitude"));
+        }
         settings.commit();
         try{
             FileOutputStream outputStream = openFileOutput("saltFile", MODE_PRIVATE);
-            outputStream.write((byte[]) profile.get("salt"));
+            outputStream.write(profile.getBytes("salt"));
             outputStream.close();
         }catch(Exception e){
             e.printStackTrace();
         }
         try{
             FileOutputStream outputStream = openFileOutput("passwordCheck", MODE_PRIVATE);
-            outputStream.write((byte[]) profile.get("passcode"));
+            outputStream.write(profile.getBytes("passcode"));
             outputStream.close();
         }catch (Exception e){
             e.printStackTrace();
         }
-        //todo fetch files
+        if(profile.containsKey("passwordData")) {
+            FileOutputStream outputStream;
+            try {
+                outputStream = openFileOutput("passwordData", Context.MODE_PRIVATE);
+                outputStream.write(profile.getBytes("passwordData"));
+                outputStream.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }else {
+            FileOutputStream outputStream;
+            try {
+                outputStream = openFileOutput("passwordData", Context.MODE_PRIVATE);
+                outputStream.write("".getBytes("UTF-8"));
+                outputStream.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
     }
 
     /*
@@ -169,6 +216,13 @@ public class Unlock extends Activity{
     private void checkPassword() {
         EditText password = (EditText) findViewById(R.id.password);
 
+        String pass = password.getText().toString();
+        String pattern = "^[a-zA-Z0-9!@]*$";
+        if (pass.isEmpty() || pass.length() < 3 || pass.length() > 31 || !pass.matches(pattern)) {
+            password.setError("must be:\n at least 3 characters \n less than 31 characters \n alpha numeric ");
+            return;
+        }
+
         try {
             FileInputStream inputStream = openFileInput("passwordCheck");
             int buffSize = (int) inputStream.getChannel().size();
@@ -178,7 +232,6 @@ public class Unlock extends Activity{
                 reader = inputStream.read(buff);
             }
             inputStream.close();
-            String pass = password.getText().toString();
             encryptDecrypt ende = new encryptDecrypt();
             masterKey = ende.masterKeyGenerate(pass.getBytes("UTF-8"), getApplicationContext());
 

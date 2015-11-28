@@ -33,6 +33,7 @@ public class Settings extends AppCompatActivity {
     Button btnPasswordChange;
     Button btnRadiusChange;
     Button btnSetHomeBase;
+    Button btnLogout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +43,7 @@ public class Settings extends AppCompatActivity {
         btnPasswordChange = (Button) findViewById(R.id.btnPasswordChange);
         btnRadiusChange = (Button) findViewById(R.id.btnRadius);
         btnSetHomeBase = (Button) findViewById(R.id.btnHomebaseSet);
+        btnLogout = (Button) findViewById(R.id.btnLogout);
 
         btnUsernameChange.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -67,7 +69,16 @@ public class Settings extends AppCompatActivity {
         btnSetHomeBase.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setHomeBase(v);
+                setHomeBase();
+            }
+        });
+
+        btnLogout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), Unlock.class);
+                intent.putExtra("firstTime", false);
+                startActivity(intent);
             }
         });
 
@@ -253,19 +264,19 @@ public class Settings extends AppCompatActivity {
         });
     }
 
-    private void setHomeBase(View v){
+    private void setHomeBase(){
         final Dialog usrDialog = new Dialog(this);
         usrDialog.setTitle("Set HomeBase:");
-        usrDialog.setContentView(R.layout.change_radius);
-        Button btnSmall = (Button)usrDialog.findViewById(R.id.btnSmall);
+        usrDialog.setContentView(R.layout.set_homebase);
+        Button btnSet = (Button)usrDialog.findViewById(R.id.btnSet);
 
-        btnSmall.setOnClickListener(new View.OnClickListener() {
+        btnSet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Tracker gps = new Tracker(getApplicationContext());
                 if (gps.canGetLocation()) {
-                    final double latitude = gps.getLatitude();
-                    final double longitude = gps.getLongitude();
+                    final String latitude = Double.toString(gps.getLatitude());
+                    final String longitude = Double.toString(gps.getLongitude());
 
                     ParseQuery<ParseObject> query = ParseQuery.getQuery("Users");
                     query.whereEqualTo("userID", getSharedPreferences("settings", MODE_PRIVATE).getString("userID", ""));
@@ -276,8 +287,10 @@ public class Settings extends AppCompatActivity {
                                 idList.get(0).put("homeLatitude", latitude);
                                 idList.get(0).put("homeLongitude", longitude);
                                 SharedPreferences.Editor settings = getSharedPreferences("settings", MODE_PRIVATE).edit();
-                                settings.putLong("latitudeAsLong", Double.doubleToRawLongBits(latitude));
-                                settings.putLong("longitudeAsLong",  Double.doubleToRawLongBits(longitude));
+                                settings.putString("latitude", latitude);
+                                settings.putString("longitude", longitude);
+                                //settings.putLong("latitudeAsLong", Double.doubleToRawLongBits(latitude));
+                                //settings.putLong("longitudeAsLong",  Double.doubleToRawLongBits(longitude));
                                 settings.commit();
                                 idList.get(0).saveInBackground();
                             } else {

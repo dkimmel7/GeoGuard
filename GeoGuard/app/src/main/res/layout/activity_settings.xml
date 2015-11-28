@@ -47,5 +47,12 @@
             android:text="Set Home Base"
             android:id="@+id/btnHomebaseSet">
         </Button>
+        <Button
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:textSize="8pt"
+            android:text="Logout"
+            android:id="@+id/btnLogout">
+        </Button>
     </LinearLayout>
 </LinearLayout>

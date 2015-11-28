@@ -49,12 +49,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="8pt"
-            android:text="Local Passwords"
+            android:text="Passwords"
             android:id="@+id/btnLocalPass">
         </Button>
 
     </LinearLayout>
-    <LinearLayout
+   <!-- <LinearLayout
 
         android:layout_weight="100"
         android:layout_width="fill_parent"
@@ -71,7 +71,7 @@
             android:id="@+id/btnMobilePass">
         </Button>
 
-    </LinearLayout>
+    </LinearLayout> -->
     <LinearLayout
 
         android:layout_weight="100"

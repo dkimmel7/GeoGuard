@@ -2,6 +2,7 @@ package geoguard.geoguard;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -43,8 +44,6 @@ public class SignUp extends Activity implements View.OnClickListener{
         username = (EditText) findViewById(R.id.username);
 
         btnEnter.setOnClickListener(this);
-
-        Parse.initialize(this, "FAnQXaYIH3v9tMOzMG6buNMOnpDPwZZybELUFBmr", "hwOkh0Z11ZNskikNFsERhPDPT1wzdLj1SX9z5wZP");
     }
 
     @Override
@@ -88,8 +87,9 @@ public class SignUp extends Activity implements View.OnClickListener{
      */
     private boolean checkFields(View v){
         final String id = username.getText().toString();
-        if (id.isEmpty() || id.length() < 3) {
-            username.setError("must be at least three characters");
+        String pattern = "^[a-zA-Z0-9!@]*$";
+        if (id.isEmpty() || id.length() < 3 || id.length() > 31 || !id.matches(pattern)) {
+            username.setError("must be:\n at least 3 characters \n less than 31 characters \n alpha numeric ");
             return false;
         }
         username.setError(null);
@@ -99,8 +99,8 @@ public class SignUp extends Activity implements View.OnClickListener{
 
     /*
     takes the username and checks if its the local and if not updates the salt and encoded file
-    returns false if found existing username
-    todo check database
+    returns if found existing username
+    if it is unique sets all appropriate info and sends to the server
      */
     private void checkUserName(View v){
         final ProgressDialog progressDialog = new ProgressDialog(this);
@@ -108,8 +108,8 @@ public class SignUp extends Activity implements View.OnClickListener{
         progressDialog.setMessage("Creating Account...");
         progressDialog.show();
 
-        final byte[] salt = encryptDecrypt.saltGenerate(getApplicationContext());
         final String id = username.getText().toString();
+        final byte[] salt = encryptDecrypt.saltGenerate(getApplicationContext());
         final ParseObject tableName = new ParseObject("Users");
         ParseQuery<ParseObject> query = ParseQuery.getQuery("Users");
         query.whereEqualTo("userID", id);
@@ -119,8 +119,9 @@ public class SignUp extends Activity implements View.OnClickListener{
                 if (e == null) {
                     if (idList.size() > 0) {
                         Log.d("userID", "Retrieved " + idList.size() + " deviceIDs");
-                        Toast.makeText(getApplicationContext(), "User Name taken", Toast.LENGTH_LONG).show();
+                        username.setError("username taken");
                     } else {
+                        username.setError(null);
                         userprofile = tableName;
                     }
                 } else {
@@ -134,13 +135,13 @@ public class SignUp extends Activity implements View.OnClickListener{
                         // On complete call either onSignupSuccess or onSignupFailed
                         // depending on success
                         if(userprofile == null){
-                            System.out.println("FALSEEEE");
                             return;
                         }else{
                             //SharedPreferences.Editor settings = getSharedPreferences("settings", MODE_PRIVATE).edit();
                             userprofile.put("userID", id);
                             userprofile.put("salt", salt);
                             userprofile.put("radius", 10);
+                            userprofile.put("passwordData",("").getBytes());
                             userprofile.saveInBackground();
 
                             SharedPreferences.Editor settings = getSharedPreferences("settings", MODE_PRIVATE).edit();
@@ -148,6 +149,16 @@ public class SignUp extends Activity implements View.OnClickListener{
                             settings.putInt("radius", 10);
                             settings.commit();
                             storePassword();
+
+                            FileOutputStream outputStream;
+                            try {
+                                outputStream = openFileOutput("passwordData", Context.MODE_PRIVATE);
+                                outputStream.write("".getBytes("UTF-8"));
+                                outputStream.close();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+
                             Intent intent = new Intent(SignUp.this, MainScreen.class);
                             startActivity(intent);
 
@@ -165,10 +176,11 @@ public class SignUp extends Activity implements View.OnClickListener{
      */
     private boolean checkPassword(){
         //do they match?
+        String pattern = "^[a-zA-Z0-9!@]*$";
         String pass1 = password.getText().toString();
         String pass2 = confirm.getText().toString();
-        if (pass1.isEmpty() || pass1.length() < 3) {
-            password.setError("must be at least 3 characters");
+        if (pass1.isEmpty() || pass1.length() < 3 || pass1.length() > 31 || !pass1.matches(pattern)) {
+            password.setError("must be:\n at least 3 characters \n less than 31 characters \n alpha numeric ");
             return false;
         } else if (pass1.equals(pass2)) {
             password.setError(null);
@@ -194,14 +206,9 @@ public class SignUp extends Activity implements View.OnClickListener{
             outputStream.close();
             userprofile.put("passcode", password);
             userprofile.saveInBackground();
-            Toast.makeText(getApplicationContext(),"Password Saved", Toast.LENGTH_LONG).show();
         }catch (Exception e){
             e.printStackTrace();
         }
     }
 
-    public void startMain(){
-        Intent intent = new Intent(this, MainScreen.class);
-        startActivity(intent);
-    }
 }

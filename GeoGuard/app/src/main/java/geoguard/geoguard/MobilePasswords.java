@@ -21,18 +21,21 @@ import java.util.TreeMap;
 
 
 public class MobilePasswords extends ActionBarActivity {
-    private String filename = "loc";
+    private String filename = "";
     private HashMap<String, TreeMap<String,String>> data;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mobile_passwords);
+        LocalDB database = new LocalDB(MobilePasswords.this);
+        filename = database.getFilename();
         createFile();
         if(data != null) {
             LinearLayout ll = (LinearLayout) findViewById(R.id.ll);
             TreeMap<String, String> tree = data.get("");
             int i = 0;
-            for(final Map.Entry<String, String> entry : tree.entrySet()) {
+            if(tree != null)
+                for(final Map.Entry<String, String> entry : tree.entrySet()) {
                 System.out.printf("Key : %s and Value: %s %n", entry.getKey(), entry.getValue());
 
                 Button myButton = new Button(this);
@@ -45,9 +48,15 @@ public class MobilePasswords extends ActionBarActivity {
                         System.out.println("BUTTON " + entry.getKey() + "WAS CLICKED");
                         AlertDialog.Builder builder = new AlertDialog.Builder(MobilePasswords.this);
                         builder.setMessage("Password: " + entry.getValue() + "\ncopy to clipboard?").setCancelable(true);
-                        builder.setPositiveButton("Copy to clipboard", new DialogInterface.OnClickListener() {
+                        builder.setPositiveButton("Copy", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 Toast.makeText(getBaseContext(), "Copied to clipboard(not implemented)", Toast.LENGTH_LONG).show();
+                            }
+                        });
+                        builder.setNeutralButton("Remove", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                Toast.makeText(getBaseContext(), "Password removed(not implemented)", Toast.LENGTH_LONG).show();
+
                             }
                         });
                         builder.setNegativeButton("Close", new DialogInterface.OnClickListener() {

@@ -40,71 +40,14 @@ public class MainScreen extends Activity implements View.OnClickListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_screen);
 
-        /*
-        // Enable Local Datastore.
-        Parse.enableLocalDatastore(this);
-
-        //code for getting a unique device id
-        final TelephonyManager tm = (TelephonyManager) getBaseContext().getSystemService(Context.TELEPHONY_SERVICE);
-
-        final String tmDevice, tmSerial, androidId;
-        tmDevice = "" + tm.getDeviceId();
-        tmSerial = "" + tm.getSimSerialNumber();
-        androidId = "" + android.provider.Settings.Secure.getString(getContentResolver(), android.provider.Settings.Secure.ANDROID_ID);
-
-        UUID deviceUuid = new UUID(androidId.hashCode(), ((long)tmDevice.hashCode() << 32) | tmSerial.hashCode());
-        final String deviceId = deviceUuid.toString();
-        Parse.initialize(this, "FAnQXaYIH3v9tMOzMG6buNMOnpDPwZZybELUFBmr", "hwOkh0Z11ZNskikNFsERhPDPT1wzdLj1SX9z5wZP");
-        //allows for data to be stored in parse
-       // ParseObject testObject = new ParseObject("TestObject");
-       // testObject.put("foo", deviceId);
-       // testObject.saveInBackground();
-        final ParseObject tableName = new ParseObject("Users");
-        //tableName.put("username", "user");
-        //tableName.saveInBackground();// because of final?
-       // tableName.put("columnOne", "string"); //string
-       // tableName.put("columnTwo", 12); //integer
-        //tableName.put("columnThree", x); //variable
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("Users");
-        query.whereEqualTo("deviceID", deviceId);
-        query.findInBackground(new FindCallback<ParseObject>() {
-            public void done(List<ParseObject> idList, ParseException e) {
-                if (e == null) {
-                    if (idList.size() > 0)
-                        Log.d("deviceID", "Retrieved " + idList.size() + " deviceIDs");
-                    else {
-                        ParseQuery<ParseObject> query = ParseQuery.getQuery("Users");
-                        query.findInBackground(new FindCallback<ParseObject>() {
-                            public void done(List<ParseObject> theSize, ParseException e) {
-                                if (e == null) {
-                                    tableName.put("username", "user" + theSize.size());
-                                    tableName.saveInBackground();
-                                } else {
-                                    Log.d("score", "Error: " + e.getMessage());
-                                }
-                            }
-                        });
-                        tableName.put("deviceID", deviceId);
-
-                    }
-                } else {
-                    Log.d("score", "Error: " + e.getMessage());
-                }
-            }
-        });
-
-*/
-
         btnHomeBase = (Button) findViewById(R.id.btnHomeBase);
         btnSettings = (Button) findViewById(R.id.btnSettings);
         btnLocalPass = (Button) findViewById(R.id.btnLocalPass);
-        btnMobilePass = (Button) findViewById(R.id.btnMobilePass);
         btnInsert = (Button) findViewById(R.id.btnInsert);
         btnLocation = (Button) findViewById(R.id.btnLocation); // @GeoLocation
 
         btnHomeBase.setOnClickListener(this);
         btnLocalPass.setOnClickListener(this);
-        btnMobilePass.setOnClickListener(this);
         btnSettings.setOnClickListener(this);
         btnInsert.setOnClickListener(this);
         btnLocation.setOnClickListener(this); // @GeoLocation
@@ -152,10 +95,6 @@ public class MainScreen extends Activity implements View.OnClickListener {
             case R.id.btnLocalPass:
                 Intent local = new Intent(this, LocalPasswords.class);
                 startActivity(local);
-                break;
-            case R.id.btnMobilePass:
-                Intent mobile = new Intent(this, MobilePasswords.class);
-                startActivity(mobile);
                 break;
             case R.id.btnInsert:
                 Intent insert = new Intent(this, Insert.class);
