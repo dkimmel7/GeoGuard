@@ -114,9 +114,6 @@ public class NotifyService extends Service {
 
     /* Creates/Updates notification with certain attributes */
     public void notification() {
-
-        boolean cancelNotification = false; // Cancel notification if area has been left
-
         if(NOTIFY_COUNT > 0) {
             // Build the notification
             notification.setSmallIcon(R.drawable.notification_template_icon_bg);
