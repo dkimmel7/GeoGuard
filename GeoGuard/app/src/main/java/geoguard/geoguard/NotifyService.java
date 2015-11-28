@@ -21,7 +21,11 @@ public class NotifyService extends Service {
 
     // GPS
     Tracker gps;
-
+    private static final int METERS_SET = 50;
+    private int NOTIFY_COUNT = 0;
+    private boolean WITHIN_RANGE = false;
+    private double DB_LONG = 36.975952;
+    private double DB_LAT = -122.05534399999999;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -61,9 +65,14 @@ public class NotifyService extends Service {
         Log.d("Service", "Working");
 
         // if radius is true, issue notification
-        // Issue Notification
-        notification(); // Commented out to avoid clutter of msgs when testing on master
+        gpsCheck(); // alert flag
 
+        boolean WITHIN_RANGE = false;
+
+        // Issue Notification
+        if (WITHIN_RANGE == true) {
+            notification(); // Commented out to avoid clutter of msgs when testing on master
+        }
         // Keeps the service running in the background
         return super.onStartCommand(intent, flags, startID); //START_STICKY;
     }
@@ -73,31 +82,39 @@ public class NotifyService extends Service {
     public void gpsCheck() {
         gps = new Tracker(NotifyService.this);
 
+        int recount = 0;
+
         if (gps.canGetLocation()) {
             double latitude = gps.getLatitude();
             double longitude = gps.getLongitude();
 
+            // DB_LAT and DB_LAT will be all tagged location in DB
+            // This will end up being a for-loop
+            if (gps.radius(DB_LAT, DB_LONG) <= METERS_SET) { // Will need to do this for multiple tagged coordinates in db
+                recount++;
+            }
+            // Check if the number of passwords found in current location changed
+            if (recount == NOTIFY_COUNT) {
+                WITHIN_RANGE = false;
+            } else {
+                // Updates count, notification
+                NOTIFY_COUNT = recount;
+                WITHIN_RANGE = true;
+            }
 
-            Toast.makeText(
-                    getApplicationContext(),
-                    "Your Location is -\nLat: " + latitude + "\nLong: "
-                            + longitude + "\nradius" + gps.radius(36.975952,
-                            -122.05534399999999), Toast.LENGTH_LONG).show();
         } else {
             // Display alert to turn on GPS // Put this on main screen and login screen
             gps.showSettingsAlert();
         }
 
-        return; }
+    }
 
 
     /* Creates/Updates notification with certain attributes */
     public void notification() {
 
-        int numNotify = 0; // Numbeer passwords found in the area
         boolean shouldUpdate = false; // Update Notification count if new one found in area
         boolean cancelNotification = false; // Cancel notification if area has been left
-        int metersSet = 50;
 
         // update notification if it it from 2 to 1
         // cancel notification if it is 1
@@ -109,7 +126,7 @@ public class NotifyService extends Service {
         notification.setTicker("Ticker");
         notification.setWhen(System.currentTimeMillis());
         notification.setContentTitle("GeoGuard Password Found at Location");
-        notification.setContentText("You have" + numNotify + "Password Found Within" + metersSet + "Meters of your Location");
+        notification.setContentText("You have" + NOTIFY_COUNT + "Password Found Within" + METERS_SET + "Meters of your Location");
 
         Intent intent = new Intent(this, Location.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this , 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
