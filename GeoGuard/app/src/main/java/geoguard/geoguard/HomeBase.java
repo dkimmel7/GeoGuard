@@ -82,7 +82,12 @@ public class HomeBase extends ActionBarActivity {
             int i = 0;
             for(final Map.Entry<String, TreeMap<String,String>> entry : data.entrySet()) {
 
-                if (entry.getKey().equals("")) {
+                //if location = Home Base then don't do anything with it since it stores Home Base
+                //location
+                if(entry.getKey().equals("Home Base")) {
+                    continue;
+                }
+                else if (entry.getKey().equals("")) {
                     final TreeMap<String, String> hashEntry = entry.getValue();
                     for (final Map.Entry<String, String> treeEntry : hashEntry.entrySet()) {
                         final Button myButton = new Button(this);
