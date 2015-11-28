@@ -5,6 +5,8 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -96,6 +98,15 @@ public class SignUp extends Activity implements View.OnClickListener{
         return checkPassword();
     }
 
+    /*
+    Checks network connection
+    true on success
+     */
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
 
     /*
     takes the username and checks if its the local and if not updates the salt and encoded file
@@ -103,7 +114,11 @@ public class SignUp extends Activity implements View.OnClickListener{
     if it is unique sets all appropriate info and sends to the server
      */
     private void checkUserName(View v){
-        final ProgressDialog progressDialog = new ProgressDialog(this);
+        if(!isNetworkAvailable()) {
+            Toast.makeText(getApplicationContext(), "No Network Connection\nCannot Create Profile", Toast.LENGTH_SHORT).show();
+            return;
+        }
+            final ProgressDialog progressDialog = new ProgressDialog(this);
         progressDialog.setIndeterminate(true);
         progressDialog.setMessage("Creating Account...");
         progressDialog.show();
