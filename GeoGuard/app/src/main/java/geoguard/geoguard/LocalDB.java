@@ -87,12 +87,12 @@ public class LocalDB {
     //at array[0],array[1],and array[2], respectively.
     //To use, call the function and save the result to a string array,
     // e.g. String array[] = getAllPasswords();
-    public ArrayList<String[]> getAllPasswords() {
+    public ArrayList<String[]> getAllTaggedPasswords() {
         ArrayList<String[]> output = new ArrayList<>();
         //entry.getKey is the Location and entry.getValue is the TreeMap containing all the
         //Name, Password pairs geotagged to the Location
         for(final Map.Entry<String, TreeMap<String,String>> entry : data.entrySet()) {
-            if (entry.getKey().equals("")) {
+            if (entry.getKey().equals("") || entry.getKey().equals("Home Base")) {
                 continue;
             }
             final TreeMap<String, String> hashEntry = entry.getValue();
@@ -111,6 +111,28 @@ public class LocalDB {
             }
         }
 
+        return output;
+    }
+    //Returns an ArrayList of String arrays which contain 2 elements, the password name in index 0
+    //and the password in index 1. Only 2 indices in arrays since these are non-geotagged
+    public ArrayList<String[]> getAllNonTaggedPasswords() {
+        ArrayList<String[]> output = new ArrayList<>();
+        for(final Map.Entry<String, TreeMap<String,String>> entry : data.entrySet()) {
+            if (entry.getKey().equals("")) {
+                final TreeMap<String, String> hashEntry = entry.getValue();
+                //Iterates through all the Name, Value pairs tagged to the Location entry.getKey()
+                for (final Map.Entry<String, String> treeEntry : hashEntry.entrySet()) {
+                    String entryData[] = new String[2];
+                    System.out.println("Location = " + entry.getKey() + " name = " + treeEntry.getKey() + " password = " + treeEntry.getValue());
+                    //entryData[0] will get the name which was associated with the password, aka password name
+                    entryData[0] = treeEntry.getKey();
+                    //entryData[1] will get the password
+                    entryData[1] = treeEntry.getValue();
+                    //output is an ArrayList of String arrays, each array contains a Location, Name, and Password
+                    output.add(entryData);
+                }
+            } else continue;
+        }
         return output;
     }
     public String retrievePassword(String location, String name) {
