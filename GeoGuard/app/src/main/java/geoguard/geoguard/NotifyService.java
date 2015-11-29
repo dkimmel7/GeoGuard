@@ -12,6 +12,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
@@ -27,9 +28,9 @@ public class NotifyService extends Service {
 
     // GPS
     Tracker gps;
-    private static final int METERS_SET = 8; // Default at 8; but will use settings
+    private int METERS_SET; // Default at 8; but will use settings
     private int NOTIFY_COUNT = 0;
-    private boolean WITHIN_RANGE;
+    private boolean IN_RANGE_CHANGE;
 
     // Database
     LocalDB db;
@@ -49,6 +50,11 @@ public class NotifyService extends Service {
        // Log.d("Service", "Created");                                      // Debugging
 
         db = new LocalDB(getApplicationContext());
+        SharedPreferences settings = getSharedPreferences("settings" , MODE_PRIVATE);
+        int radius = settings.getInt("radius", 0);
+        METERS_SET = radius;
+
+        Log.d("Radius:", String.valueOf(METERS_SET));
 
         super.onCreate();
 
@@ -78,7 +84,7 @@ public class NotifyService extends Service {
         gpsCheck();
 
         // Issue Notification if new password found or if left area
-        if (WITHIN_RANGE) {
+        if (IN_RANGE_CHANGE) {
             notification();
         }
 
@@ -92,7 +98,7 @@ public class NotifyService extends Service {
         gps = new Tracker(NotifyService.this);
 
         // Passwords within range unknown from start of iteration
-        WITHIN_RANGE = false;
+        IN_RANGE_CHANGE = false;
         double DB_LONGITUDE;
         double DB_LATITUDE;
 
@@ -105,10 +111,10 @@ public class NotifyService extends Service {
         // Check if entries are null, and if notifications decreased to 0 or stayed at 0
         if(entries == null) {
             if (recount == NOTIFY_COUNT) {
-                WITHIN_RANGE = false;
+                IN_RANGE_CHANGE = false;
                 return;
             } else {
-                WITHIN_RANGE = true;
+                IN_RANGE_CHANGE = true;
                 NOTIFY_COUNT = recount;
                 return;
             }
@@ -143,13 +149,13 @@ public class NotifyService extends Service {
             // Check if the number of passwords found in current location changed
             // No new location found, no need to update notification
             if (recount == NOTIFY_COUNT) {
-                WITHIN_RANGE = false;   // Flag false evades notification issuing
+                IN_RANGE_CHANGE = false;   // Flag false evades notification issuing
 
                 // New password found - increasing NOTIFY_COUNT
                 // Or User left area -  decreasing NOTIFY_COUNT
             } else {
                 NOTIFY_COUNT = recount;
-                WITHIN_RANGE = true;    // Flag true initiates notification issue/mod
+                IN_RANGE_CHANGE = true;    // Flag true initiates notification issue/mod
             }
 
             // Display alert to turn on GPS // Put this on main screen and login screen
@@ -179,7 +185,7 @@ public class NotifyService extends Service {
     public void notification() {
         if(NOTIFY_COUNT > 0) {
             // Build the notification
-            notification.setSmallIcon(R.drawable.notification_template_icon_bg);
+            notification.setSmallIcon(R.drawable.ic_geoguard); // Default: notification_template_icon_bg
             notification.setTicker("GeoGuard Password Located");
             notification.setWhen(System.currentTimeMillis());
             notification.setContentTitle("GeoGuard Password Found at Location");
@@ -203,7 +209,7 @@ public class NotifyService extends Service {
             nm.notify(uniqueID, notification.build());
         } else {
             // Cancel notification if notification un-clicked and radius is left
-            // NOTIFY_COUNT -> 0
+            // NOTIFY_COUNT will be 0
             NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
             nm.cancel(uniqueID);
 
