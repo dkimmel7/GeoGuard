@@ -75,7 +75,7 @@ public class HomeBase extends ActionBarActivity {
         gps = new Tracker(HomeBase.this);
         final LocalDB database = new LocalDB(HomeBase.this);
         filename = database.getFilename();
-        data = createFile(filename);
+        data = database.returnData();
         if(data != null) {
             final LinearLayout ll = (LinearLayout) findViewById(R.id.ll);
             final LinearLayout ll2 = (LinearLayout) findViewById(R.id.ll2);
