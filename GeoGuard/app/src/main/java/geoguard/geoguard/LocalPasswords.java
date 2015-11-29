@@ -10,6 +10,7 @@ import android.content.ClipboardManager;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
@@ -25,6 +26,8 @@ import java.io.FileInputStream;
 import java.io.ObjectInputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.TreeMap;
 
 
@@ -50,30 +53,57 @@ import java.util.Map;
 import java.util.TreeMap;
 
 
+<<<<<<< HEAD
 public class LocalPasswords extends AppCompatActivity {
     private String filename = "";
+=======
+public class LocalPasswords extends ActionBarActivity implements View.OnClickListener {
+>>>>>>> refs/remotes/origin/master
     private Tracker gps;
-
     private HashMap<String, TreeMap<String,String>> data;
+    LocalDB database = null;
+    int radius = 0;
+    private String filename = "";
+    Button bReload;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
+         final int interval = 5000; //5 seconds
+        database = new LocalDB(LocalPasswords.this);
+        filename =  database.getFilename();
+        final SharedPreferences settings = getSharedPreferences("settings" , MODE_PRIVATE);
         final ClipboardManager clipboard = (ClipboardManager)getSystemService(CLIPBOARD_SERVICE);
-        /*ClipData clip = ClipData.newPlainText("Test label", "Password1234");
-        clipboard.setPrimaryClip(clip);*/
-        SharedPreferences settings = getSharedPreferences("settings" , MODE_PRIVATE);
-
-        int radius = settings.getInt("radius", 0);
-        System.out.println("RADIUS = " + radius);
         setContentView(R.layout.activity_local_passwords);
+        bReload = (Button) findViewById(R.id.bReload);
+        bReload.setOnClickListener(this);
+        radius = settings.getInt("radius", 0);
+        System.out.println("RADIUS = " + radius);
         gps = new Tracker(LocalPasswords.this);
-        final LocalDB database = new LocalDB(getApplicationContext());
-        filename = database.getFilename();
-        data = createFile(filename);
+        data = database.returnData();
+        final LinearLayout ll = (LinearLayout) findViewById(R.id.ll);
+        final LinearLayout ll2 = (LinearLayout) findViewById(R.id.ll2);
+        updatePassSections();
+    }
+
+    public void onClick(View view) {
+        switch(view.getId()) {
+            case R.id.bReload:
+                updatePassSections();
+                break;
+        }
+    }
+    //Updates both sections of the password screen
+    private void updatePassSections() {
+        final LinearLayout ll = (LinearLayout) findViewById(R.id.ll);
+        final LinearLayout ll2 = (LinearLayout) findViewById(R.id.ll2);
+        final SharedPreferences settings = getSharedPreferences("settings" , MODE_PRIVATE);
+        final ClipboardManager clipboard = (ClipboardManager)getSystemService(CLIPBOARD_SERVICE);
+        clearTagged(ll);
+        clearNonTagged(ll2);
+        database.returnData();
         if(data != null) {
-            final LinearLayout ll = (LinearLayout) findViewById(R.id.ll);
-            final LinearLayout ll2 = (LinearLayout) findViewById(R.id.ll2);
             TreeMap<String, String> tree = data.get("");
             int i = 0;
             for(final Map.Entry<String, TreeMap<String,String>> entry : data.entrySet()) {
@@ -83,6 +113,7 @@ public class LocalPasswords extends AppCompatActivity {
                 if(entry.getKey().equals("Home Base")) {
                     continue;
                 }
+                //if the key = "" then it is the non-geotagged passwords TreeMap
                 else if (entry.getKey().equals("")) {
                     final TreeMap<String, String> hashEntry = entry.getValue();
                     for (final Map.Entry<String, String> treeEntry : hashEntry.entrySet()) {
@@ -105,9 +136,11 @@ public class LocalPasswords extends AppCompatActivity {
                                 });
                                 builder.setNeutralButton("Remove", new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int id) {
-                                        Toast.makeText(getBaseContext(), "Password removed", Toast.LENGTH_LONG).show();
-                                        database.delete(entry.getKey(), treeEntry.getKey());
-                                        ll2.removeView(myButton);
+                                        if(database != null) {
+                                            Toast.makeText(getBaseContext(), "Password removed", Toast.LENGTH_LONG).show();
+                                            database.delete(entry.getKey(), treeEntry.getKey());
+                                            ll2.removeView(myButton);
+                                        } else Toast.makeText(getBaseContext(), "Unable to remove password", Toast.LENGTH_LONG).show();
 
                                     }
                                 });
@@ -132,8 +165,8 @@ public class LocalPasswords extends AppCompatActivity {
                         continue;
                     }
                     if (!(showCurrLoc(entry.getKey(), getLocation(), radius))) {
-                    System.out.println("not showCurrLoc on loc = " + entry.getKey());
-                    continue;
+                        System.out.println("not showCurrLoc on loc = " + entry.getKey());
+                        continue;
                     }
                 }
                 final TreeMap<String, String> hashEntry = entry.getValue();
@@ -149,7 +182,7 @@ public class LocalPasswords extends AppCompatActivity {
                         public void onClick(View v) {
                             System.out.println("BUTTON " + treeEntry.getKey() + "WAS CLICKED");
                             AlertDialog.Builder builder = new AlertDialog.Builder(LocalPasswords.this);
-                            builder.setMessage(Html.fromHtml("Location: \n" + entry.getKey() + "\n" + "Password: " + "<b>" +treeEntry.getValue() + "</b>" +  "<br>" + "\nCopy to Clipboard?")).setCancelable(true);
+                            builder.setMessage(Html.fromHtml("Location: \n" + entry.getKey() + "\n" + "Password: " + "<b>" + treeEntry.getValue() + "</b>" + "<br>" + "\nCopy to Clipboard?")).setCancelable(true);
                             builder.setPositiveButton("Copy", new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int id) {
                                     ClipData clip = ClipData.newPlainText(treeEntry.getKey(), treeEntry.getValue());
@@ -159,9 +192,11 @@ public class LocalPasswords extends AppCompatActivity {
                             });
                             builder.setNeutralButton("Remove", new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int id) {
-                                    Toast.makeText(getBaseContext(), "Password removed", Toast.LENGTH_LONG).show();
-                                    database.delete(entry.getKey(), treeEntry.getKey());
-                                    ll.removeView(myButton);
+                                    if (database != null) {
+                                        Toast.makeText(getBaseContext(), "Password removed", Toast.LENGTH_LONG).show();
+                                        database.delete(entry.getKey(), treeEntry.getKey());
+                                        ll.removeView(myButton);
+                                    } else Toast.makeText(getBaseContext(), "Unable to remove password", Toast.LENGTH_LONG).show();
 
                                 }
                             });
@@ -181,6 +216,19 @@ public class LocalPasswords extends AppCompatActivity {
             }
         } else System.out.println("data is null");
     }
+    //Clears buttons from tagged section of password screen if there are any
+    private void clearTagged(LinearLayout ll) {
+        if(((LinearLayout) ll).getChildCount() > 0){
+            ll.removeAllViews();
+        }
+    }
+    //Clears buttons from non-tagged section of password screen if there are any
+    private void clearNonTagged(LinearLayout ll2) {
+        if(((LinearLayout) ll2).getChildCount() > 0){
+            ll2.removeAllViews();
+        }
+    }
+
     private double getDist(double lat1, double lon1, double lat2, double lon2) {
         double R = 6372.8; // radius of Earth in KM
         double dLat = Math.toRadians(lat2 - lat1);

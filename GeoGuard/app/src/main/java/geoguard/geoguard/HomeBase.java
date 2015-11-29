@@ -23,6 +23,7 @@ import android.widget.Toast;
 
 import java.io.FileInputStream;
 import java.io.ObjectInputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
@@ -75,35 +76,39 @@ public class HomeBase extends AppCompatActivity {
         gps = new Tracker(HomeBase.this);
         final LocalDB database = new LocalDB(HomeBase.this);
         filename = database.getFilename();
-        data = createFile(filename);
+        data = database.returnData();
         if(data != null) {
             final LinearLayout ll = (LinearLayout) findViewById(R.id.ll);
             final LinearLayout ll2 = (LinearLayout) findViewById(R.id.ll2);
             TreeMap<String, String> tree = data.get("");
             int i = 0;
-            for(final Map.Entry<String, TreeMap<String,String>> entry : data.entrySet()) {
+           // for(final Map.Entry<String, TreeMap<String,String>> entry : data.entrySet()) {
 
                 //if location = Home Base then don't do anything with it since it stores Home Base
                 //location
-                if(entry.getKey().equals("Home Base")) {
+               /* if(entry.getKey().equals("Home Base")) {
                     continue;
-                }
-                else if (entry.getKey().equals("")) {
-                    final TreeMap<String, String> hashEntry = entry.getValue();
-                    for (final Map.Entry<String, String> treeEntry : hashEntry.entrySet()) {
+                }*/
+               // else if (entry.getKey().equals("")) {
+                    //final TreeMap<String, String> hashEntry = entry.getValue();
+                    ArrayList<String[]>  enteries = database.getAllNonTaggedPasswords();
+                    for (int j = 0; j<enteries.size(); j++) {
+                        //final String loc = enteries.get(j)[0];
+                        final String name = enteries.get(j)[0];
+                        final String pass = enteries.get(j)[1];
                         final Button myButton = new Button(this);
                         myButton.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
                                 ViewGroup.LayoutParams.WRAP_CONTENT));
                         myButton.setId(i);
-                        myButton.setText(treeEntry.getKey());
+                        myButton.setText(name);
                         myButton.setOnClickListener(new View.OnClickListener() {
                             public void onClick(View v) {
-                                System.out.println("BUTTON " + treeEntry.getKey() + "WAS CLICKED");
+                                System.out.println("BUTTON " + name + " WAS CLICKED");
                                 AlertDialog.Builder builder = new AlertDialog.Builder(HomeBase.this);
-                                builder.setMessage(Html.fromHtml("Password: " + "<b>" + treeEntry.getValue() + "</b>" + "<br>" + "\nCopy to Clipboard?")).setCancelable(true);
+                                builder.setMessage(Html.fromHtml("Password: " + "<b>" + pass + "</b>" + "<br>" + "\nCopy to Clipboard?")).setCancelable(true);
                                 builder.setPositiveButton("Copy", new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int id) {
-                                        ClipData clip = ClipData.newPlainText(treeEntry.getKey(), treeEntry.getValue());
+                                        ClipData clip = ClipData.newPlainText(name, pass);
                                         clipboard.setPrimaryClip(clip);
                                         Toast.makeText(getBaseContext(), "Copied to clipboard", Toast.LENGTH_LONG).show();
                                     }
@@ -111,7 +116,7 @@ public class HomeBase extends AppCompatActivity {
                                 builder.setNeutralButton("Remove", new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int id) {
                                         Toast.makeText(getBaseContext(), "Password removed", Toast.LENGTH_LONG).show();
-                                        database.delete(entry.getKey(), treeEntry.getKey());
+                                        database.delete("", name);
                                         ll2.removeView(myButton);
 
                                     }
@@ -129,8 +134,9 @@ public class HomeBase extends AppCompatActivity {
                         ll2.addView(myButton);
                         ++i;
                     }
-                    continue;
-                } else if(true){
+                    //continue;
+                //}
+                 /*else if(true){
                     String currLocation = getLocation();
                     if(currLocation == null) {
                         Toast.makeText(getApplicationContext(),"Please turn on your GPS", Toast.LENGTH_SHORT).show();
@@ -140,24 +146,27 @@ public class HomeBase extends AppCompatActivity {
                         System.out.println("not showCurrLoc on loc = " + homeLoc);
                         continue;
                     }
-                }
-                final TreeMap<String, String> hashEntry = entry.getValue();
-                for (final Map.Entry<String, String> treeEntry : hashEntry.entrySet()) {
-                    System.out.println("Location = " + entry.getKey() + " name = " + treeEntry.getKey() + " value = " + treeEntry.getValue());
+                }*/
+                ArrayList<String[]>  enteries2 = database.getAllTaggedPasswords();
+                for (int k = 0; k<enteries2.size(); k++) {
+                    final String loc2 = enteries2.get(k)[0];
+                    final String name2 = enteries2.get(k)[1];
+                    final String pass2 = enteries2.get(k)[2];
+                    System.out.println("Location = " + loc2 + " name = " + name2 + " value = " + pass2);
 
                     final Button myButton = new Button(this);
                     myButton.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
                             ViewGroup.LayoutParams.WRAP_CONTENT));
                     myButton.setId(i);
-                    myButton.setText(treeEntry.getKey());
+                    myButton.setText(name2);
                     myButton.setOnClickListener(new View.OnClickListener() {
                         public void onClick(View v) {
-                            System.out.println("BUTTON " + treeEntry.getKey() + "WAS CLICKED");
+                            System.out.println("BUTTON " + name2 + " WAS CLICKED");
                             AlertDialog.Builder builder = new AlertDialog.Builder(HomeBase.this);
-                            builder.setMessage(Html.fromHtml("Location: \n" + entry.getKey() + "\n" + "Password: " + "<b>" +treeEntry.getValue() + "</b>" +  "<br>" + "\nCopy to Clipboard?")).setCancelable(true);
+                            builder.setMessage(Html.fromHtml("Location: \n" + loc2 + "\n" + "Password: " + "<b>" +pass2 + "</b>" +  "<br>" + "\nCopy to Clipboard?")).setCancelable(true);
                             builder.setPositiveButton("Copy", new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int id) {
-                                    ClipData clip = ClipData.newPlainText(treeEntry.getKey(), treeEntry.getValue());
+                                    ClipData clip = ClipData.newPlainText(name2, pass2);
                                     clipboard.setPrimaryClip(clip);
                                     Toast.makeText(getBaseContext(), "Copied to clipboard", Toast.LENGTH_LONG).show();
                                 }
@@ -165,7 +174,7 @@ public class HomeBase extends AppCompatActivity {
                             builder.setNeutralButton("Remove", new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int id) {
                                     Toast.makeText(getBaseContext(), "Password removed", Toast.LENGTH_LONG).show();
-                                    database.delete(entry.getKey(), treeEntry.getKey());
+                                    database.delete(loc2, name2);
                                     ll.removeView(myButton);
 
                                 }
@@ -183,7 +192,7 @@ public class HomeBase extends AppCompatActivity {
                     ll.addView(myButton);
                     ++i;
                 }
-            }
+            //}
         } else System.out.println("data is null");
     }
     private double getDist(double lat1, double lon1, double lat2, double lon2) {

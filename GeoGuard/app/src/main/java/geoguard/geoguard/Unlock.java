@@ -5,6 +5,8 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -62,13 +64,26 @@ public class Unlock extends Activity{
         btnSignup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), SignUp.class);
-                startActivity(intent);
+                if(isNetworkAvailable()) {
+                    Intent intent = new Intent(getApplicationContext(), SignUp.class);
+                    startActivity(intent);
+                }else{
+                    Toast.makeText(getApplicationContext(),"No Network Connection\nCannot Make Profile", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
     }
 
+    /*
+    Checks network connection
+    true on success
+     */
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -113,6 +128,10 @@ public class Unlock extends Activity{
         }
         if(getSharedPreferences("settings", MODE_PRIVATE).getString("userID", "-1").equals(id)){
             checkPassword();
+            return;
+        }
+        if(!isNetworkAvailable()){
+            Toast.makeText(getApplicationContext(),"No Network Connection\nCannot Fetch Profile", Toast.LENGTH_SHORT).show();
             return;
         }
         final ProgressDialog progressDialog = new ProgressDialog(this);

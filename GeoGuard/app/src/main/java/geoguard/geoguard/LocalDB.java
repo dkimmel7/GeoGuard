@@ -228,6 +228,9 @@ public class LocalDB {
         }
         return output;
     }
+    public HashMap<String, TreeMap<String, String>> returnData() {
+        return data;
+    }
     //Returns the name of the file to which the local database is saved
     public String getFilename() {
         return filename;
@@ -240,6 +243,9 @@ public class LocalDB {
             return;
         }
         TreeMap<String, String> hashEntry = data.get(location);
+        if(hashEntry == null) {
+            return;
+        }
         hashEntry.remove(name);
         if(hashEntry.isEmpty()) {
             data.remove(location);
