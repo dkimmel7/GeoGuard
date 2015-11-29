@@ -27,14 +27,12 @@ public class NotifyService extends Service {
 
     // GPS
     Tracker gps;
-    private static final int METERS_SET = 50;
+    private static final int METERS_SET = 8; // Default at 8; but will use settings
     private int NOTIFY_COUNT = 0;
     private boolean WITHIN_RANGE;
 
     // Database
     LocalDB db;
-    //private String filename = "";
-   // private HashMap<String, TreeMap<String,String>> data;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -48,7 +46,7 @@ public class NotifyService extends Service {
     @Override
     public void onCreate() {
         Toast.makeText(this, "Service Created", Toast.LENGTH_LONG).show();  // Debugging
-        Log.d("Service", "Created");                                        // Debugging
+       // Log.d("Service", "Created");                                      // Debugging
 
         db = new LocalDB(getApplicationContext());
 
@@ -74,23 +72,15 @@ public class NotifyService extends Service {
     public int onStartCommand(Intent intent, int flags, int startID) {
         // Debugging
         Toast.makeText(getApplicationContext(), "Service Working", Toast.LENGTH_LONG).show();
-        Log.d("Service", "Working");
+       // Log.d("Service", "Working"); // Debugging
 
         // Check if user is within radius of tagged location
         gpsCheck();
 
-        String bools = "false";
-
         // Issue Notification if new password found or if left area
         if (WITHIN_RANGE) {
-            notification(); // Commented out to avoid clutter of msgs when testing on master
-            bools = "true";
+            notification();
         }
-
-        Toast.makeText(
-                getApplicationContext(),
-                "Your Location is -\nLat: " + gps.getLatitude() + "\nLong: "
-                        + gps.getLongitude() + "\nRadius: " + gps.radius(0,0) + "\nNotification: " + bools , Toast.LENGTH_LONG).show();
 
         // Keeps the service running in the background
         return super.onStartCommand(intent, flags, startID); //START_STICKY;
@@ -112,13 +102,6 @@ public class NotifyService extends Service {
         ArrayList<String[]> entries = new ArrayList<>();
         entries = db.getAllTaggedPasswords();
 
-
-        if (entries == null) {
-            Log.d("Entries", "Null");
-        }
-        Log.d("Entries", "Not Null");
-
-
         // Check if entries are null, and if notifications decreased to 0 or stayed at 0
         if(entries == null) {
             if (recount == NOTIFY_COUNT) {
@@ -130,7 +113,6 @@ public class NotifyService extends Service {
                 return;
             }
         }
-
 
         // Get current locations
         if (gps.canGetLocation()) {
@@ -148,7 +130,12 @@ public class NotifyService extends Service {
 
                 // Check if current location is within radius of tagged location
                 if (gps.radius(DB_LATITUDE,DB_LONGITUDE) <= METERS_SET) {
-                    Log.d("Entry Check2:", entry[0]);
+
+                    Toast.makeText(
+                            getApplicationContext(),
+                            "Your Location is -\nLat: " + gps.getLatitude() + "\nLong: "
+                                    + gps.getLongitude() + "\nRadius: " + gps.radius(DB_LATITUDE,DB_LONGITUDE), Toast.LENGTH_LONG).show();
+
                     recount++; // Increment count for password found
                 }
             }
@@ -196,9 +183,18 @@ public class NotifyService extends Service {
             notification.setTicker("GeoGuard Password Located");
             notification.setWhen(System.currentTimeMillis());
             notification.setContentTitle("GeoGuard Password Found at Location");
-            notification.setContentText("You have" + NOTIFY_COUNT + "Password Found Within" + METERS_SET + "Meters of your Location");
 
-            Intent intent = new Intent(this, Location.class);
+            if(NOTIFY_COUNT == 1) {
+                notification.setContentText("You have "
+                        + NOTIFY_COUNT + " password found within "
+                        + METERS_SET + " meters of your location");
+            } else {
+                notification.setContentText("You have "
+                        + NOTIFY_COUNT + " passwords found within "
+                        + METERS_SET + " meters of your location");
+            }
+
+            Intent intent = new Intent(this, LocalPasswords.class);
             PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
             notification.setContentIntent(pendingIntent);
 
@@ -206,8 +202,8 @@ public class NotifyService extends Service {
             NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
             nm.notify(uniqueID, notification.build());
         } else {
-            // Cancel notification if notification unclicked and radius is left
-            // NOTIFY_COUNT should be 0
+            // Cancel notification if notification un-clicked and radius is left
+            // NOTIFY_COUNT -> 0
             NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
             nm.cancel(uniqueID);
 
