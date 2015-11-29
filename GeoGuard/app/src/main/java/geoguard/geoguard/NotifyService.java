@@ -29,10 +29,12 @@ public class NotifyService extends Service {
     Tracker gps;
     private static final int METERS_SET = 50;
     private int NOTIFY_COUNT = 0;
-    private boolean WITHIN_RANGE = false;
+    private boolean WITHIN_RANGE;
 
     // Database
-    LocalDB db = new LocalDB(NotifyService.this);
+    LocalDB db;
+    //private String filename = "";
+   // private HashMap<String, TreeMap<String,String>> data;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -47,6 +49,9 @@ public class NotifyService extends Service {
     public void onCreate() {
         Toast.makeText(this, "Service Created", Toast.LENGTH_LONG).show();  // Debugging
         Log.d("Service", "Created");                                        // Debugging
+
+        db = new LocalDB(getApplicationContext());
+
         super.onCreate();
 
         // Builds single notification
@@ -74,10 +79,18 @@ public class NotifyService extends Service {
         // Check if user is within radius of tagged location
         gpsCheck();
 
+        String bools = "false";
+
         // Issue Notification if new password found or if left area
         if (WITHIN_RANGE) {
             notification(); // Commented out to avoid clutter of msgs when testing on master
+            bools = "true";
         }
+
+        Toast.makeText(
+                getApplicationContext(),
+                "Your Location is -\nLat: " + gps.getLatitude() + "\nLong: "
+                        + gps.getLongitude() + "\nRadius: " + gps.radius(0,0) + "\nNotification: " + bools , Toast.LENGTH_LONG).show();
 
         // Keeps the service running in the background
         return super.onStartCommand(intent, flags, startID); //START_STICKY;
@@ -97,7 +110,27 @@ public class NotifyService extends Service {
         int recount = 0;
         // For all locations tagged in database, entry[0] is location
         ArrayList<String[]> entries = new ArrayList<>();
-        entries = db.getAllPasswords();
+        entries = db.getAllTaggedPasswords();
+
+
+        if (entries == null) {
+            Log.d("Entries", "Null");
+        }
+        Log.d("Entries", "Not Null");
+
+
+        // Check if entries are null, and if notifications decreased to 0 or stayed at 0
+        if(entries == null) {
+            if (recount == NOTIFY_COUNT) {
+                WITHIN_RANGE = false;
+                return;
+            } else {
+                WITHIN_RANGE = true;
+                NOTIFY_COUNT = recount;
+                return;
+            }
+        }
+
 
         // Get current locations
         if (gps.canGetLocation()) {
@@ -111,9 +144,11 @@ public class NotifyService extends Service {
                 DB_LONGITUDE = loc[1];
 
                 Log.d("Entry Check:", entry[0]);
+                Log.d("GPS Location:", String.valueOf(gps.getLatitude()) + ", " + String.valueOf(gps.getLongitude()));
 
                 // Check if current location is within radius of tagged location
-                if (gps.radius(DB_LATITUDE, DB_LONGITUDE) <= METERS_SET) {
+                if (gps.radius(DB_LATITUDE,DB_LONGITUDE) <= METERS_SET) {
+                    Log.d("Entry Check2:", entry[0]);
                     recount++; // Increment count for password found
                 }
             }
@@ -134,6 +169,7 @@ public class NotifyService extends Service {
         } else {
             gps.showSettingsAlert();
         }
+
     }
 
     /* Extracts the latitude and longitude of the input string which should be of the form "lat long"
@@ -157,7 +193,7 @@ public class NotifyService extends Service {
         if(NOTIFY_COUNT > 0) {
             // Build the notification
             notification.setSmallIcon(R.drawable.notification_template_icon_bg);
-            notification.setTicker("Ticker");
+            notification.setTicker("GeoGuard Password Located");
             notification.setWhen(System.currentTimeMillis());
             notification.setContentTitle("GeoGuard Password Found at Location");
             notification.setContentText("You have" + NOTIFY_COUNT + "Password Found Within" + METERS_SET + "Meters of your Location");
