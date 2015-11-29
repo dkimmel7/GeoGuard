@@ -52,13 +52,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
+public class LocalPasswords extends AppCompatActivity implements View.OnClickListener {
 
-<<<<<<< HEAD
-public class LocalPasswords extends AppCompatActivity {
-    private String filename = "";
-=======
-public class LocalPasswords extends ActionBarActivity implements View.OnClickListener {
->>>>>>> refs/remotes/origin/master
     private Tracker gps;
     private HashMap<String, TreeMap<String,String>> data;
     LocalDB database = null;
