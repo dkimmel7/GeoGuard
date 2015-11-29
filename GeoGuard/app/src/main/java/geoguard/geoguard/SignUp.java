@@ -149,9 +149,7 @@ public class SignUp extends Activity implements View.OnClickListener{
                     public void run() {
                         // On complete call either onSignupSuccess or onSignupFailed
                         // depending on success
-                        if(userprofile == null){
-                            return;
-                        }else{
+                        if(userprofile != null){
                             //SharedPreferences.Editor settings = getSharedPreferences("settings", MODE_PRIVATE).edit();
                             userprofile.put("userID", id);
                             userprofile.put("salt", salt);
@@ -178,10 +176,10 @@ public class SignUp extends Activity implements View.OnClickListener{
                             startActivity(intent);
 
                         }
-                        // onSignupFailed();
                         progressDialog.dismiss();
                     }
-                }, 3000);
+                }, 1500);
+
 
     }
 
