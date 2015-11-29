@@ -35,7 +35,8 @@ public class Tracker extends Service implements LocationListener{
      * Application will only receive updates when location changed via distance and time passed
      */
     private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 5; // 5 meters
-    private static final long MIN_TIME_BW_UPDATES = 1 * 60 * 1000; // 1 minute (in ms)
+    private static final long MIN_TIME_BW_UPDATES = 1 * 20 * 1000; // 20 second
+    // Default 1*60*1000 = 1 minute (in ms)
 
     public Tracker(Context context) {
         this.context = context;
@@ -128,6 +129,7 @@ public class Tracker extends Service implements LocationListener{
 
         return longitude;
     }
+
 
     // Gets the meters between the current location to set location
     public float radius(double latitude, double longitude) {

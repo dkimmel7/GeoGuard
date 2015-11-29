@@ -12,6 +12,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -51,8 +52,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
+public class LocalPasswords extends AppCompatActivity implements View.OnClickListener {
 
-public class LocalPasswords extends ActionBarActivity implements View.OnClickListener {
     private Tracker gps;
     private HashMap<String, TreeMap<String,String>> data;
     LocalDB database = null;
