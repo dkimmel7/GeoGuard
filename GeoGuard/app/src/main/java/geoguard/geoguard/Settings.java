@@ -100,8 +100,9 @@ public class Settings extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 final String newId = usernameText.getText().toString();
-                if (newId.isEmpty() || newId.length() < 3) {
-                    usernameText.setError("must be at least three characters");
+                String pattern = "^[a-zA-Z0-9!@]*$";
+                if (newId.isEmpty() || newId.length() < 3 || newId.length() > 31 || !newId.matches(pattern)) {
+                    usernameText.setError("must be:\n at least 3 characters \n less than 31 characters \n alpha numeric ");
                 } else {
                     ParseQuery<ParseObject> query = ParseQuery.getQuery("Users");
                     query.whereEqualTo("userID", newId);
@@ -159,16 +160,16 @@ public class Settings extends AppCompatActivity {
             public void onClick(View v) {
                 String pass1 = password1.getText().toString();
                 String pass2 = password2.getText().toString();
-                if (pass1.equals("")) {
-                    password2.setError("Invalid Password");
-                } else if (!pass1.equals(pass2)) {
+                String pattern = "^[a-zA-Z0-9!@]*$";
+                if (pass1.isEmpty() || pass1.length() < 3 || pass1.length() > 31 || !pass1.matches(pattern)) {
+                    password1.setError("must be:\n at least 3 characters \n less than 31 characters \n alpha numeric ");
+                }else if(!pass1.equals(pass2)) {
                     password2.setError("Passwords Must Match");
-                } else {
+                }else {
                     storePassword(pass1);
                     password1.setError(null);
                     usrDialog.dismiss();
                 }
-
             }
         });
         usrDialog.show();
@@ -218,9 +219,7 @@ public class Settings extends AppCompatActivity {
         btnSmall.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SharedPreferences.Editor settings = getSharedPreferences("settings" , MODE_PRIVATE).edit();
                 saveRadius(15);
-                settings.commit();
                 usrDialog.dismiss();
             }
         });
@@ -254,6 +253,7 @@ public class Settings extends AppCompatActivity {
                         settings.putInt("radius", val);
                         settings.commit();
                         idList.get(0).saveInBackground();
+                        Toast.makeText(getApplicationContext(), "radius updated", Toast.LENGTH_LONG).show();
                     } else {
                         System.err.println("Something went wrong");
                     }
@@ -293,6 +293,7 @@ public class Settings extends AppCompatActivity {
                                 //settings.putLong("longitudeAsLong",  Double.doubleToRawLongBits(longitude));
                                 settings.commit();
                                 idList.get(0).saveInBackground();
+                                Toast.makeText(getApplicationContext(), "Homebase set", Toast.LENGTH_LONG).show();
                             } else {
                                 System.err.println("Something went wrong");
                             }
@@ -301,6 +302,8 @@ public class Settings extends AppCompatActivity {
                             }
                         }
                     });
+                }else{
+                    Toast.makeText(getApplicationContext(),"Cannot get location.\n Make sure location is turn on.", Toast.LENGTH_LONG).show();
                 }
                 usrDialog.dismiss();
             }

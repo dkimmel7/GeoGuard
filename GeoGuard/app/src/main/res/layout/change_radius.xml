@@ -21,7 +21,7 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:textSize="8pt"
-            android:text="10 meters"
+            android:text="15 meters"
             android:id="@+id/btnSmall">
         </Button>
         <Button
@@ -29,7 +29,7 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:textSize="8pt"
-            android:text="25 meters"
+            android:text="30 meters"
             android:id="@+id/btnMedium">
         </Button>
         <Button
@@ -37,7 +37,7 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:textSize="8pt"
-            android:text="50 meters"
+            android:text="60 meters"
             android:id="@+id/btnLarge">
         </Button>
     </LinearLayout>
