@@ -15,8 +15,8 @@ import java.util.Calendar;
  */
 
 public class AlarmReceiver extends BroadcastReceiver {
-    // Restart service in 4 second intervals
-    private static final long REPEAT = 1000 * 4;
+    // Restart service in 5 second intervals
+    private static final long REPEAT = 1000 * 5;
 
     /* Called on boot. Sets an alarm that will call a receiver
      * in certain set timed intervals.
