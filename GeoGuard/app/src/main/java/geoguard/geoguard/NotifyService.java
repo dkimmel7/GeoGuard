@@ -46,8 +46,8 @@ public class NotifyService extends Service {
      */
     @Override
     public void onCreate() {
-        Toast.makeText(this, "Service Created", Toast.LENGTH_LONG).show();  // Debugging
-       // Log.d("Service", "Created");                                      // Debugging
+       // Toast.makeText(this, "Service Created", Toast.LENGTH_LONG).show();  // Debugging
+        Log.d("Service", "Created");                                          // Debugging
 
         db = new LocalDB(getApplicationContext());
         SharedPreferences settings = getSharedPreferences("settings" , MODE_PRIVATE);
@@ -77,7 +77,7 @@ public class NotifyService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startID) {
         // Debugging
-        Toast.makeText(getApplicationContext(), "Service Working", Toast.LENGTH_LONG).show();
+       // Toast.makeText(getApplicationContext(), "Service Working", Toast.LENGTH_LONG).show();
        // Log.d("Service", "Working"); // Debugging
 
         // Check if user is within radius of tagged location
@@ -137,11 +137,11 @@ public class NotifyService extends Service {
                 // Check if current location is within radius of tagged location
                 if (gps.radius(DB_LATITUDE,DB_LONGITUDE) <= METERS_SET) {
 
-                    Toast.makeText(
+                /*    Toast.makeText(
                             getApplicationContext(),
                             "Your Location is -\nLat: " + gps.getLatitude() + "\nLong: "
                                     + gps.getLongitude() + "\nRadius: " + gps.radius(DB_LATITUDE,DB_LONGITUDE), Toast.LENGTH_LONG).show();
-
+                 */
                     recount++; // Increment count for password found
                 }
             }
