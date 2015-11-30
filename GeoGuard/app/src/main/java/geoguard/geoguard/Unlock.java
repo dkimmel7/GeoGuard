@@ -190,6 +190,9 @@ public class Unlock extends Activity{
         if(profile.containsKey("latitude")){
             settings.putString("latitude", profile.getString("latitude"));
             settings.putString("longitude", profile.getString("longitude"));
+        }else{
+            settings.remove("latitude");
+            settings.remove("longitude");
         }
         settings.commit();
         try{
