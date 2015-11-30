@@ -343,8 +343,8 @@ public class Settings extends AppCompatActivity {
                     public void done(List<ParseObject> idList, ParseException e) {
                         if (e == null) {
                             if (idList.size() == 1) {
-                                idList.get(0).put("homeLatitude", latitude);
-                                idList.get(0).put("homeLongitude", longitude);
+                                idList.get(0).put("latitude", latitude);
+                                idList.get(0).put("longitude", longitude);
                                 SharedPreferences.Editor settings = getSharedPreferences("settings", MODE_PRIVATE).edit();
                                 settings.putString("latitude", latitude);
                                 settings.putString("longitude", longitude);
