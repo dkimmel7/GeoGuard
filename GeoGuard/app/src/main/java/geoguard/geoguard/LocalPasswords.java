@@ -8,6 +8,7 @@ import android.app.AlertDialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
@@ -135,7 +136,14 @@ public class LocalPasswords extends AppCompatActivity implements View.OnClickLis
                                             Toast.makeText(getBaseContext(), "Password removed", Toast.LENGTH_LONG).show();
                                             database.delete(entry.getKey(), treeEntry.getKey());
                                             ll2.removeView(myButton);
-                                        } else Toast.makeText(getBaseContext(), "Unable to remove password", Toast.LENGTH_LONG).show();
+
+                                            // Destroy Notification Service to reload database,
+                                            // NotifyService will auto recreate itself via onCreate
+                                            Intent notify = new Intent(LocalPasswords.this, NotifyService.class);
+                                            LocalPasswords.this.stopService(notify);
+
+                                        } else
+                                            Toast.makeText(getBaseContext(), "Unable to remove password", Toast.LENGTH_LONG).show();
 
                                     }
                                 });
