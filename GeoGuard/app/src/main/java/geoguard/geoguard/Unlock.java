@@ -44,9 +44,11 @@ public class Unlock extends Activity{
         if (extras != null) {
             boolean firstTime = extras.getBoolean("firstTime", true);
             if (firstTime) {
+                getIntent().putExtra("firstTime", false);
                 Parse.initialize(this, "FAnQXaYIH3v9tMOzMG6buNMOnpDPwZZybELUFBmr", "hwOkh0Z11ZNskikNFsERhPDPT1wzdLj1SX9z5wZP");
             }
         }else{
+            getIntent().putExtra("firstTime", false);
             Parse.initialize(this, "FAnQXaYIH3v9tMOzMG6buNMOnpDPwZZybELUFBmr", "hwOkh0Z11ZNskikNFsERhPDPT1wzdLj1SX9z5wZP");
         }
 
