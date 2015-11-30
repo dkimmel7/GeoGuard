@@ -2,8 +2,11 @@ package geoguard.geoguard;
 
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -88,6 +91,10 @@ public class Settings extends AppCompatActivity {
 
     //todo check database
     private void changeUsername() {
+        if(!isNetworkAvailable()){
+            Toast.makeText(getApplicationContext(),"No Network Connection\nCannot Change Settings", Toast.LENGTH_SHORT).show();
+            return;
+        }
         final Dialog usrDialog = new Dialog(this);
         usrDialog.setTitle("Change Username:");
         usrDialog.setContentView(R.layout.change_username);
@@ -99,6 +106,11 @@ public class Settings extends AppCompatActivity {
         btnenter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(!isNetworkAvailable()){
+                    Toast.makeText(getApplicationContext(),"No Network Connection\nCannot Change Settings", Toast.LENGTH_SHORT).show();
+                    usrDialog.dismiss();
+                    return;
+                }
                 final String newId = usernameText.getText().toString();
                 String pattern = "^[a-zA-Z0-9!@]*$";
                 if (newId.isEmpty() || newId.length() < 3 || newId.length() > 31 || !newId.matches(pattern)) {
@@ -148,6 +160,10 @@ public class Settings extends AppCompatActivity {
     }
 
     private void changePassword(){
+        if(!isNetworkAvailable()){
+            Toast.makeText(getApplicationContext(),"No Network Connection\nCannot Change Settings", Toast.LENGTH_SHORT).show();
+            return;
+        }
         final Dialog usrDialog = new Dialog(this);
         usrDialog.setTitle("Change Password:");
         usrDialog.setContentView(R.layout.change_password);
@@ -158,6 +174,11 @@ public class Settings extends AppCompatActivity {
         btnenter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(!isNetworkAvailable()){
+                    Toast.makeText(getApplicationContext(),"No Network Connection\nCannot Change Settings", Toast.LENGTH_SHORT).show();
+                    usrDialog.dismiss();
+                    return;
+                }
                 String pass1 = password1.getText().toString();
                 String pass2 = password2.getText().toString();
                 String pattern = "^[a-zA-Z0-9!@]*$";
@@ -207,7 +228,21 @@ public class Settings extends AppCompatActivity {
         }
     }
 
+    /*
+    Checks network connection
+    true on success
+     */
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
     private void changeRadius(){
+        if(!isNetworkAvailable()){
+            Toast.makeText(getApplicationContext(),"No Network Connection\nCannot Change Settings", Toast.LENGTH_SHORT).show();
+            return;
+        }
         final Dialog usrDialog = new Dialog(this);
         usrDialog.setTitle("Change Radius:");
         usrDialog.setContentView(R.layout.change_radius);
@@ -219,6 +254,11 @@ public class Settings extends AppCompatActivity {
         btnSmall.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(!isNetworkAvailable()){
+                    Toast.makeText(getApplicationContext(),"No Network Connection\nCannot Change Settings", Toast.LENGTH_SHORT).show();
+                    usrDialog.dismiss();
+                    return;
+                }
                 saveRadius(15);
                 usrDialog.dismiss();
             }
@@ -226,6 +266,11 @@ public class Settings extends AppCompatActivity {
         btnMedium.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(!isNetworkAvailable()){
+                    Toast.makeText(getApplicationContext(),"No Network Connection\nCannot Change Settings", Toast.LENGTH_SHORT).show();
+                    usrDialog.dismiss();
+                    return;
+                }
                 saveRadius(30);
                 usrDialog.dismiss();
             }
@@ -233,6 +278,11 @@ public class Settings extends AppCompatActivity {
         btnLarge.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(!isNetworkAvailable()){
+                    Toast.makeText(getApplicationContext(),"No Network Connection\nCannot Change Settings", Toast.LENGTH_SHORT).show();
+                    usrDialog.dismiss();
+                    return;
+                }
                 saveRadius(60);
                 usrDialog.dismiss();
             }
@@ -265,6 +315,10 @@ public class Settings extends AppCompatActivity {
     }
 
     private void setHomeBase(){
+        if(!isNetworkAvailable()){
+            Toast.makeText(getApplicationContext(),"No Network Connection\nCannot Change Settings", Toast.LENGTH_SHORT).show();
+            return;
+        }
         final Dialog usrDialog = new Dialog(this);
         usrDialog.setTitle("Set HomeBase:");
         usrDialog.setContentView(R.layout.set_homebase);
@@ -273,6 +327,11 @@ public class Settings extends AppCompatActivity {
         btnSet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(!isNetworkAvailable()){
+                    Toast.makeText(getApplicationContext(),"No Network Connection\nCannot Change Settings", Toast.LENGTH_SHORT).show();
+                    usrDialog.dismiss();
+                    return;
+                }
                 Tracker gps = new Tracker(getApplicationContext());
                 if (gps.canGetLocation()) {
                     final String latitude = Double.toString(gps.getLatitude());
@@ -284,8 +343,8 @@ public class Settings extends AppCompatActivity {
                     public void done(List<ParseObject> idList, ParseException e) {
                         if (e == null) {
                             if (idList.size() == 1) {
-                                idList.get(0).put("homeLatitude", latitude);
-                                idList.get(0).put("homeLongitude", longitude);
+                                idList.get(0).put("latitude", latitude);
+                                idList.get(0).put("longitude", longitude);
                                 SharedPreferences.Editor settings = getSharedPreferences("settings", MODE_PRIVATE).edit();
                                 settings.putString("latitude", latitude);
                                 settings.putString("longitude", longitude);

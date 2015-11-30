@@ -46,6 +46,7 @@ public class NotifyService extends Service {
      */
     @Override
     public void onCreate() {
+
        // Toast.makeText(this, "Service Created", Toast.LENGTH_LONG).show();  // Debugging
         Log.d("Service", "Created");                                          // Debugging
 
@@ -56,11 +57,11 @@ public class NotifyService extends Service {
 
         Log.d("Radius:", String.valueOf(METERS_SET));
 
-        super.onCreate();
-
         // Builds single notification
         notification = new NotificationCompat.Builder(this);
         notification.setAutoCancel(true);
+
+        super.onCreate();
     }
 
     /* System calls this when service is removed. Should not be called directly.
@@ -68,7 +69,6 @@ public class NotifyService extends Service {
      */
     @Override
     public void onDestroy() {
-        Toast.makeText(this, "Service Destroyed", Toast.LENGTH_LONG).show();    // Debugging
         super.onDestroy();
     }
 

@@ -154,12 +154,14 @@ public class SignUp extends Activity implements View.OnClickListener{
                             userprofile.put("userID", id);
                             userprofile.put("salt", salt);
                             userprofile.put("radius", 10);
-                            userprofile.put("passwordData",("").getBytes());
+                            userprofile.put("passwordData", ("").getBytes());
                             userprofile.saveInBackground();
 
                             SharedPreferences.Editor settings = getSharedPreferences("settings", MODE_PRIVATE).edit();
                             settings.putString("userID", id);
                             settings.putInt("radius", 10);
+                            settings.remove("latitude");
+                            settings.remove("longitude");
                             settings.commit();
                             storePassword();
 
