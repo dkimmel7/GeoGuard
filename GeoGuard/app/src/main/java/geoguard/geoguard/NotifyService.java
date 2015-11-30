@@ -125,6 +125,11 @@ public class NotifyService extends Service {
             double latitude = gps.getLatitude();
             double longitude = gps.getLongitude();
 
+            // Makes sure there is no initial crash when checking radius
+            if(latitude == 0.0 && longitude == 0.0) {
+                return;
+            }
+
             // Query all locations in database
             for(String[] entry : entries) {
                 double loc[] = stringToDoublePair(entry[0]);
