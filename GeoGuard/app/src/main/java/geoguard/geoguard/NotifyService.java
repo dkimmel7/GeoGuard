@@ -28,7 +28,7 @@ public class NotifyService extends Service {
 
     // GPS
     Tracker gps;
-    private int METERS_SET; // Default at 8; but will use settings
+    private int METERS_SET;
     private int NOTIFY_COUNT = 0;
     private boolean IN_RANGE_CHANGE;
 
@@ -89,7 +89,7 @@ public class NotifyService extends Service {
         }
 
         // Keeps the service running in the background
-        return super.onStartCommand(intent, flags, startID); //START_STICKY;
+        return START_STICKY; //super.onStartCommand(intent, flags, startID);
     }
 
 
@@ -124,6 +124,11 @@ public class NotifyService extends Service {
         if (gps.canGetLocation()) {
             double latitude = gps.getLatitude();
             double longitude = gps.getLongitude();
+
+            // Makes sure there is no initial crash when checking radius
+            if(latitude == 0.0 && longitude == 0.0) {
+                return;
+            }
 
             // Query all locations in database
             for(String[] entry : entries) {

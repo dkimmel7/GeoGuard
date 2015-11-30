@@ -1,6 +1,7 @@
 package geoguard.geoguard;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -118,6 +119,12 @@ public class Insert extends AppCompatActivity implements View.OnClickListener {
                     storePassword(locString, editKey.getText().toString(), editValue.getText().toString());
                     System.out.print("checkbox is checked \n");
                     System.out.println("locString = " +locString);
+
+                    // Destroy Notification Service to reload database,
+                    // NotifyService will auto recreate itself via onCreate
+                    Intent notify = new Intent(this, NotifyService.class);
+                    this.stopService(notify);
+
                 } else {
                     storePassword(noLocString, editKey.getText().toString(), editValue.getText().toString());
                     System.out.print("checkbox is NOT checked \n");

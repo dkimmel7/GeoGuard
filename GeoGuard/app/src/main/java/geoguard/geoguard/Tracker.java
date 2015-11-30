@@ -34,7 +34,7 @@ public class Tracker extends Service implements LocationListener{
     /* Controls frequency of location updates
      * Application will only receive updates when location changed via distance and time passed
      */
-    private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 5; // 5 meters
+    private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 4; // 4 meters
     private static final long MIN_TIME_BW_UPDATES = 1 * 20 * 1000; // 20 second
     // Default 1*60*1000 = 1 minute (in ms)
 
