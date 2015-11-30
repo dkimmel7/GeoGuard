@@ -33,9 +33,7 @@ public class MainScreen extends Activity implements View.OnClickListener {
     Button btnSettings;
     Button btnHomeBase;
     Button btnLocalPass;
-    Button btnMobilePass;
     Button btnInsert;
-    Button btnLocation; // @GeoLocation
     private Tracker gps;
 
     @Override
@@ -47,13 +45,11 @@ public class MainScreen extends Activity implements View.OnClickListener {
         btnSettings = (Button) findViewById(R.id.btnSettings);
         btnLocalPass = (Button) findViewById(R.id.btnLocalPass);
         btnInsert = (Button) findViewById(R.id.btnInsert);
-        btnLocation = (Button) findViewById(R.id.btnLocation); // @GeoLocation
 
         btnHomeBase.setOnClickListener(this);
         btnLocalPass.setOnClickListener(this);
         btnSettings.setOnClickListener(this);
         btnInsert.setOnClickListener(this);
-        btnLocation.setOnClickListener(this); // @GeoLocation
 
         SharedPreferences settings = getSharedPreferences("settings" , MODE_PRIVATE);
         gps = new Tracker(MainScreen.this);
@@ -129,10 +125,6 @@ public class MainScreen extends Activity implements View.OnClickListener {
             case R.id.btnInsert:
                 Intent insert = new Intent(this, Insert.class);
                 startActivity(insert);
-                break;
-            case R.id.btnLocation: // @GeoLocation
-                Intent location = new Intent(this, Location.class);
-                startActivity(location);
                 break;
             default:
                 break;
