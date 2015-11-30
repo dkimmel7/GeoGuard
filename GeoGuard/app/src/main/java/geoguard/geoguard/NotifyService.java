@@ -38,8 +38,6 @@ public class NotifyService extends Service {
      */
     @Override
     public void onCreate() {
-        Toast.makeText(this, "Service Created", Toast.LENGTH_LONG).show();  // Debugging
-        Log.d("Service", "Created");                                        // Debugging
         super.onCreate();
 
         // Builds single notification
