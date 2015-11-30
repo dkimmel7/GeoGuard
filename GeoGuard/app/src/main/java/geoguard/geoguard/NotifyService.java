@@ -50,7 +50,6 @@ public class NotifyService extends Service {
      */
     @Override
     public void onDestroy() {
-        Toast.makeText(this, "Service Destroyed", Toast.LENGTH_LONG).show();    // Debugging
         super.onDestroy();
     }
 
@@ -59,8 +58,6 @@ public class NotifyService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startID) {
         // Debugging
-        Toast.makeText(getApplicationContext(), "Service Working", Toast.LENGTH_LONG).show();
-        Log.d("Service", "Working");
 
         // Check if user is within radius of tagged location
         gpsCheck();
