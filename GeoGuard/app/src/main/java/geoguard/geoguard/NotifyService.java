@@ -206,7 +206,7 @@ public class NotifyService extends Service {
             }
 
             Intent intent = new Intent(this, Unlock.class);
-            //intent.putExtra("firstTime", false);
+            intent.putExtra("firstTime", false);
             PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
             notification.setContentIntent(pendingIntent);
 
