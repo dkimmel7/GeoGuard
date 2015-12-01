@@ -144,8 +144,8 @@ public class NotifyService extends Service {
                 DB_LATITUDE = loc[0];
                 DB_LONGITUDE = loc[1];
 
-                Log.d("Entry Check:", entry[0]);
-                Log.d("GPS Location:", String.valueOf(gps.getLatitude()) + ", " + String.valueOf(gps.getLongitude()));
+                // Log.d("Entry Check:", entry[0]);
+                // Log.d("GPS Location:", String.valueOf(gps.getLatitude()) + ", " + String.valueOf(gps.getLongitude()));
 
                 // Check if current location is within radius of tagged location
                 if (gps.radius(DB_LATITUDE,DB_LONGITUDE) <= METERS_SET) {
@@ -226,7 +226,6 @@ public class NotifyService extends Service {
             // NOTIFY_COUNT will be 0
             NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
             nm.cancel(uniqueID);
-            Log.d("Notification", "Canceled Uniquely");
 
         }
     }

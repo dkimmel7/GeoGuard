@@ -119,11 +119,9 @@ public class LocalDB {
             }
             hasEntry = true;
         }
-        
-        if (!hasEntry) {
-            output = null;
-            Log.d("Entry Count", "There is no entry");
-        }
+
+        // Reveals database as empty for notification background service
+        if (!hasEntry) { output = null; }
 
         return output;
     }
