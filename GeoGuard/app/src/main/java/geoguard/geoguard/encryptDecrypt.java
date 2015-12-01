@@ -24,7 +24,7 @@ import javax.crypto.spec.SecretKeySpec;
 public class encryptDecrypt {
 
 
-    private static void encryptDecryptFile(String inputFilename, String outputFilename, boolean encrypt , byte[] key, Context keyContext){
+    public static void encryptDecryptFile(String inputFilename, String outputFilename, boolean encrypt , byte[] key, Context keyContext){
         FileInputStream inputStream;
         FileOutputStream outputStream;
         //if(encrypt) {
@@ -63,7 +63,7 @@ public class encryptDecrypt {
 
     }
 
-    private static void encryptDecryptFile(String filename, boolean encrypt , byte[] key, Context keyContext){
+    public static void encryptDecryptFile(String filename, boolean encrypt , byte[] key, Context keyContext){
         FileInputStream inputStream;
         FileOutputStream outputStream;
         try{

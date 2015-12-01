@@ -29,9 +29,11 @@ public class LocalDB {
     final private String filename = "passwordData";
     final private String nonGeoTaggedString = "";
     private Context context = null;
+    private byte[] key;
 
-    LocalDB(Context context) {
+    LocalDB(Context context, byte[] key) {
         this.context = context;
+        this.key = key;
         openFile();
     }
     //Loads the file saved in filename and puts it in data if it can, data will be null otherwise
@@ -71,8 +73,12 @@ public class LocalDB {
             public void done(List<ParseObject> idList, ParseException e) {
                 if (e == null) {
                     if (idList.size() == 1) {
-                        idList.get(0).put(filename,buff);
-                        idList.get(0).saveInBackground();
+                        try{
+                            idList.get(0).put(filename, encryptDecrypt.encryptBytes(key, context, buff));
+                            idList.get(0).saveInBackground();
+                        }catch (Exception f){
+                            f.printStackTrace();
+                        }
                     } else {
                         System.err.println("Something went wrong");
                     }
@@ -81,6 +87,7 @@ public class LocalDB {
                 }
             }
         });
+        encryptDecrypt.encryptDecryptFile(filename, false, key, context);
     }
 
     //Returns an ArrayList of String arrays, each array contains the location, name, and password

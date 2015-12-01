@@ -54,7 +54,7 @@ import java.util.TreeMap;
 public class HomeBase extends AppCompatActivity {
     private String filename = "";
     private Tracker gps;
-
+    byte[] masterKey;
     private HashMap<String, TreeMap<String,String>> data;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +63,10 @@ public class HomeBase extends AppCompatActivity {
         final ClipboardManager clipboard = (ClipboardManager)getSystemService(CLIPBOARD_SERVICE);
         /*ClipData clip = ClipData.newPlainText("Test label", "Password1234");
         clipboard.setPrimaryClip(clip);*/
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            masterKey = extras.getByteArray("masterKey");
+        }
         SharedPreferences settings = getSharedPreferences("settings" , MODE_PRIVATE);
         int radius = settings.getInt("radius", 0);
         String homeLat = settings.getString("latitude", "");
@@ -74,7 +78,7 @@ public class HomeBase extends AppCompatActivity {
 
         setContentView(R.layout.activity_home_base);
         gps = new Tracker(HomeBase.this);
-        final LocalDB database = new LocalDB(HomeBase.this);
+        final LocalDB database = new LocalDB(HomeBase.this,masterKey);
         filename = database.getFilename();
         data = database.returnData();
         if(data != null) {

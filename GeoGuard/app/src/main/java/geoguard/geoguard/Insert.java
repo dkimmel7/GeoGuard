@@ -42,7 +42,8 @@ public class Insert extends AppCompatActivity implements View.OnClickListener {
     private ObjectOutputStream objectOutputStreamLoc;
     private ObjectOutputStream objectOutputStreamNoLoc;
     private HashMap<String, TreeMap<String,String>> noLocData;
-    private LocalDB database = new LocalDB(Insert.this);
+    private LocalDB database;
+    byte[] masterKey;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,8 +51,13 @@ public class Insert extends AppCompatActivity implements View.OnClickListener {
         Context context = this;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_insert);
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            masterKey = extras.getByteArray("masterKey");
+        }
+        database= new LocalDB(Insert.this,masterKey);
         gps = new Tracker(Insert.this);
-        LocalDB database = new LocalDB(Insert.this);
+        LocalDB database = new LocalDB(Insert.this,masterKey);
         filename = database.getFilename();
         checkbox = (CheckBox) findViewById(R.id.checkBox);
         textList = (TextView) findViewById(R.id.textList);
