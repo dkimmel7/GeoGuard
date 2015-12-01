@@ -141,12 +141,6 @@ public class LocalPasswords extends AppCompatActivity implements View.OnClickLis
                                             Toast.makeText(getBaseContext(), "Password removed", Toast.LENGTH_LONG).show();
                                             database.delete(entry.getKey(), treeEntry.getKey());
                                             ll2.removeView(myButton);
-
-                                            // Destroy Notification Service to reload database,
-                                            // NotifyService will auto recreate itself via onCreate
-                                            Intent notify = new Intent(LocalPasswords.this, NotifyService.class);
-                                            LocalPasswords.this.stopService(notify);
-
                                         } else
                                             Toast.makeText(getBaseContext(), "Unable to remove password", Toast.LENGTH_LONG).show();
 
@@ -204,6 +198,12 @@ public class LocalPasswords extends AppCompatActivity implements View.OnClickLis
                                         Toast.makeText(getBaseContext(), "Password removed", Toast.LENGTH_LONG).show();
                                         database.delete(entry.getKey(), treeEntry.getKey());
                                         ll.removeView(myButton);
+
+                                        // Destroy Notification Service to reload database,
+                                        // NotifyService will auto recreate itself via onCreate
+                                        Intent notify = new Intent(LocalPasswords.this, NotifyService.class);
+                                        LocalPasswords.this.stopService(notify);
+
                                     } else Toast.makeText(getBaseContext(), "Unable to remove password", Toast.LENGTH_LONG).show();
 
                                 }
@@ -290,6 +290,8 @@ public class LocalPasswords extends AppCompatActivity implements View.OnClickLis
         }
         return null;
     }
+
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
