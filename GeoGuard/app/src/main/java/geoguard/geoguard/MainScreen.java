@@ -35,12 +35,17 @@ public class MainScreen extends Activity implements View.OnClickListener {
     Button btnLocalPass;
     Button btnInsert;
     private Tracker gps;
+    public byte[] masterKey;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_screen);
 
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            masterKey = extras.getByteArray("masterKey");
+        }
         btnHomeBase = (Button) findViewById(R.id.btnHomeBase);
         btnSettings = (Button) findViewById(R.id.btnSettings);
         btnLocalPass = (Button) findViewById(R.id.btnLocalPass);
@@ -112,6 +117,7 @@ public class MainScreen extends Activity implements View.OnClickListener {
         switch (v.getId()){
             case R.id.btnHomeBase:
                 Intent home = new Intent(this, HomeBase.class);
+                home.putExtra("masterKey", masterKey);
                 startActivity(home);
                 break;
             case R.id.btnSettings:
@@ -120,10 +126,12 @@ public class MainScreen extends Activity implements View.OnClickListener {
                 break;
             case R.id.btnLocalPass:
                 Intent local = new Intent(this, LocalPasswords.class);
+                local.putExtra("masterKey", masterKey);
                 startActivity(local);
                 break;
             case R.id.btnInsert:
                 Intent insert = new Intent(this, Insert.class);
+                insert.putExtra("masterKey", masterKey);
                 startActivity(insert);
                 break;
             default:

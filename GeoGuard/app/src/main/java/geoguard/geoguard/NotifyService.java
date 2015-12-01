@@ -50,7 +50,7 @@ public class NotifyService extends Service {
        // Toast.makeText(this, "Service Created", Toast.LENGTH_LONG).show();  // Debugging
         Log.d("Service", "Created");                                          // Debugging
 
-        db = new LocalDB(getApplicationContext());
+        db = new LocalDB(getApplicationContext(),null);
         SharedPreferences settings = getSharedPreferences("settings" , MODE_PRIVATE);
         int radius = settings.getInt("radius", 0);
         METERS_SET = radius;
@@ -205,7 +205,8 @@ public class NotifyService extends Service {
                         + METERS_SET + " meters of your location");
             }
 
-            Intent intent = new Intent(this, LocalPasswords.class);
+            Intent intent = new Intent(this, Unlock.class);
+            intent.putExtra("firstTime", false);
             PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
             notification.setContentIntent(pendingIntent);
 

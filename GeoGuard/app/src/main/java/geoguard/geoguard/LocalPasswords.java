@@ -61,13 +61,18 @@ public class LocalPasswords extends AppCompatActivity implements View.OnClickLis
     int radius = 0;
     private String filename = "";
     Button bReload;
+    byte[] masterKey;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
          final int interval = 5000; //5 seconds
-        database = new LocalDB(LocalPasswords.this);
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            masterKey = extras.getByteArray("masterKey");
+        }
+        database = new LocalDB(LocalPasswords.this, masterKey);
         filename =  database.getFilename();
         final SharedPreferences settings = getSharedPreferences("settings" , MODE_PRIVATE);
         final ClipboardManager clipboard = (ClipboardManager)getSystemService(CLIPBOARD_SERVICE);

@@ -175,6 +175,7 @@ public class SignUp extends Activity implements View.OnClickListener{
                             }
 
                             Intent intent = new Intent(SignUp.this, MainScreen.class);
+                            intent.putExtra("masterKey", masterKey);
                             startActivity(intent);
 
                         }

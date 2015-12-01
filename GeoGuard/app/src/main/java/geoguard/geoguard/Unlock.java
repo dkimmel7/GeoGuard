@@ -33,7 +33,6 @@ import java.util.List;
 
 public class Unlock extends Activity{
 
-
     byte[] masterKey;
 
     @Override
@@ -212,8 +211,9 @@ public class Unlock extends Activity{
         if(profile.containsKey("passwordData")) {
             FileOutputStream outputStream;
             try {
+                System.out.println("decrypting data");
                 outputStream = openFileOutput("passwordData", Context.MODE_PRIVATE);
-                outputStream.write(profile.getBytes("passwordData"));
+                outputStream.write(encryptDecrypt.decryptBytes(encryptDecrypt.masterKeyGenerate(((EditText) findViewById(R.id.password)).getText().toString().getBytes("UTF-8"), getApplicationContext()), getApplicationContext(), profile.getBytes("passwordData")));
                 outputStream.close();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -263,6 +263,7 @@ public class Unlock extends Activity{
             if (Arrays.equals(decrypted, "password".getBytes("UTF-8"))) {
                 password.setError(null);
                 Intent intent = new Intent(this, MainScreen.class);
+                intent.putExtra("masterKey", masterKey);
                 startActivity(intent);
             } else {
                 password.setError("Invalid password");
