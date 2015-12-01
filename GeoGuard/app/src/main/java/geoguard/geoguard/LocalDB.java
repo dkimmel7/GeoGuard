@@ -96,6 +96,7 @@ public class LocalDB {
     // e.g. String array[] = getAllPasswords();
     public ArrayList<String[]> getAllTaggedPasswords() {
         ArrayList<String[]> output = new ArrayList<>();
+        boolean hasEntry = false;
         //entry.getKey is the Location and entry.getValue is the TreeMap containing all the
         //Name, Password pairs geotagged to the Location
         for(final Map.Entry<String, TreeMap<String,String>> entry : data.entrySet()) {
@@ -116,6 +117,12 @@ public class LocalDB {
                 //output is an ArrayList of String arrays, each array contains a Location, Name, and Password
                 output.add(entryData);
             }
+            hasEntry = true;
+        }
+        
+        if (!hasEntry) {
+            output = null;
+            Log.d("Entry Count", "There is no entry");
         }
 
         return output;

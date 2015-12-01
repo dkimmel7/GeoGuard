@@ -69,6 +69,7 @@ public class NotifyService extends Service {
      */
     @Override
     public void onDestroy() {
+        Log.d("Service", "Destroyed");
         super.onDestroy();
     }
 
@@ -106,14 +107,19 @@ public class NotifyService extends Service {
         int recount = 0;
         // For all locations tagged in database, entry[0] is location
         ArrayList<String[]> entries = new ArrayList<>();
+
+        Log.d("Error Check", "Check Point 1");
         entries = db.getAllTaggedPasswords();
 
         // Check if entries are null, and if notifications decreased to 0 or stayed at 0
+        // Saves needless GPS tracking when database is empty
         if(entries == null) {
+            // Database is still empty
             if (recount == NOTIFY_COUNT) {
                 IN_RANGE_CHANGE = false;
                 return;
             } else {
+                // Geotagged password was removed from local DB
                 IN_RANGE_CHANGE = true;
                 NOTIFY_COUNT = recount;
                 return;
@@ -129,6 +135,8 @@ public class NotifyService extends Service {
             if(latitude == 0.0 && longitude == 0.0) {
                 return;
             }
+
+            Log.d("Error Check", "Check Point 2");
 
             // Query all locations in database
             for(String[] entry : entries) {
@@ -218,6 +226,7 @@ public class NotifyService extends Service {
             // NOTIFY_COUNT will be 0
             NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
             nm.cancel(uniqueID);
+            Log.d("Notification", "Canceled Uniquely");
 
         }
     }
