@@ -69,6 +69,7 @@ public class NotifyService extends Service {
      */
     @Override
     public void onDestroy() {
+        Log.d("Service", "Destroyed");
         super.onDestroy();
     }
 
@@ -109,11 +110,14 @@ public class NotifyService extends Service {
         entries = db.getAllTaggedPasswords();
 
         // Check if entries are null, and if notifications decreased to 0 or stayed at 0
+        // Saves needless GPS tracking when database is empty
         if(entries == null) {
+            // Database is still empty
             if (recount == NOTIFY_COUNT) {
                 IN_RANGE_CHANGE = false;
                 return;
             } else {
+                // Geotagged password was removed from local DB
                 IN_RANGE_CHANGE = true;
                 NOTIFY_COUNT = recount;
                 return;
@@ -129,15 +133,15 @@ public class NotifyService extends Service {
             if(latitude == 0.0 && longitude == 0.0) {
                 return;
             }
-
+            
             // Query all locations in database
             for(String[] entry : entries) {
                 double loc[] = stringToDoublePair(entry[0]);
                 DB_LATITUDE = loc[0];
                 DB_LONGITUDE = loc[1];
 
-                Log.d("Entry Check:", entry[0]);
-                Log.d("GPS Location:", String.valueOf(gps.getLatitude()) + ", " + String.valueOf(gps.getLongitude()));
+                // Log.d("Entry Check:", entry[0]);
+                // Log.d("GPS Location:", String.valueOf(gps.getLatitude()) + ", " + String.valueOf(gps.getLongitude()));
 
                 // Check if current location is within radius of tagged location
                 if (gps.radius(DB_LATITUDE,DB_LONGITUDE) <= METERS_SET) {
