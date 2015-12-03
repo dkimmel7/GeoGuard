@@ -108,7 +108,7 @@ public class NotifyService extends Service {
         // For all locations tagged in database, entry[0] is location
         ArrayList<String[]> entries = new ArrayList<>();
 
-        Log.d("Error Check", "Check Point 1");
+        //Log.d("Error Check", "Check Point 1");
         entries = db.getAllTaggedPasswords();
 
         // Check if entries are null, and if notifications decreased to 0 or stayed at 0
@@ -136,7 +136,7 @@ public class NotifyService extends Service {
                 return;
             }
 
-            Log.d("Error Check", "Check Point 2");
+            //Log.d("Error Check", "Check Point 2");
 
             // Query all locations in database
             for(String[] entry : entries) {

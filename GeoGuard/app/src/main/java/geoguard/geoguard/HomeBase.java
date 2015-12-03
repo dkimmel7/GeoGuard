@@ -8,6 +8,7 @@ import android.app.AlertDialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -180,6 +181,11 @@ public class HomeBase extends AppCompatActivity {
                                     Toast.makeText(getBaseContext(), "Password removed", Toast.LENGTH_LONG).show();
                                     database.delete(loc2, name2);
                                     ll.removeView(myButton);
+
+                                    // Destroy Notification Service to reload database,
+                                    // NotifyService will auto recreate itself via onCreate
+                                    Intent notify = new Intent(HomeBase.this, NotifyService.class);
+                                    HomeBase.this.stopService(notify);
 
                                 }
                             });
